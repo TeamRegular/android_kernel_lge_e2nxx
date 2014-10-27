@@ -362,6 +362,10 @@ static const struct input_device_id adreno_input_ids[] = {
 #else /* QCT Original */
 		.evbit = { BIT_MASK(EV_ABS) },
 #endif
+		/* assumption: MT_.._X & MT_.._Y are in the same long */
+		.absbit = { [BIT_WORD(ABS_MT_POSITION_X)] =
+				BIT_MASK(ABS_MT_POSITION_X) |
+				BIT_MASK(ABS_MT_POSITION_Y) },
 	},
 	{ },
 };
