@@ -171,8 +171,17 @@ int mdss_dsi_clk_div_config(struct mdss_panel_info *panel_info,
 				(h_period * v_period * frame_rate * bpp * 8);
 		}
 	}
-	pll_divider_config.clk_rate = panel_info->clk_rate;
 
+#ifdef CONFIG_LGE_LCD_TUNING
+	h_period += panel_info->lcdc.xres_pad;
+	v_period += panel_info->lcdc.yres_pad;
+
+	panel_info->clk_rate =
+				((h_period * v_period * frame_rate * bpp * 8) / lanes);
+	pr_info("clk_rate : %d\n", panel_info->clk_rate);
+#endif
+
+	pll_divider_config.clk_rate = panel_info->clk_rate;
 
 	if (pll_divider_config.clk_rate == 0)
 		pll_divider_config.clk_rate = 454000000;
@@ -382,6 +391,8 @@ static int mdss_dsi_clk_enable(struct mdss_dsi_ctrl_pdata *ctrl_pdata)
 		pr_info("%s: mdss_dsi_clks already ON\n", __func__);
 		return 0;
 	}
+
+
 
 	rc = clk_enable(ctrl_pdata->esc_clk);
 	if (rc) {

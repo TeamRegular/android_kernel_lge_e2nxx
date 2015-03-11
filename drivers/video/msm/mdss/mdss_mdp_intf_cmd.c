@@ -23,6 +23,11 @@
 
 #define MAX_SESSIONS 2
 
+#if defined (CONFIG_MACH_MSM8926_VFP_KR)
+extern int is_fboot;
+#endif
+
+
 /* wait for at most 2 vsync for lowest refresh rate (24hz) */
 #define KOFF_TIMEOUT msecs_to_jiffies(84)
 
@@ -247,6 +252,8 @@ static void mdss_mdp_cmd_readptr_done(void *arg)
 		return;
 	}
 
+	mdss_mdp_ctl_perf_taken(ctl);
+
 	vsync_time = ktime_get();
 	ctl->vsync_cnt++;
 
@@ -308,6 +315,8 @@ static void mdss_mdp_cmd_pingpong_done(void *arg)
 		return;
 	}
 
+	mdss_mdp_ctl_perf_done(ctl);
+
 	spin_lock(&ctx->clk_lock);
 	list_for_each_entry(tmp, &ctx->vsync_handlers, list) {
 		if (tmp->enabled && tmp->cmd_post_flush)
@@ -340,9 +349,12 @@ static void pingpong_done_work(struct work_struct *work)
 	struct mdss_mdp_cmd_ctx *ctx =
 		container_of(work, typeof(*ctx), pp_done_work);
 
-	if (ctx->ctl)
+	if (ctx->ctl) {
 		while (atomic_add_unless(&ctx->pp_done_cnt, -1, 0))
 			mdss_mdp_ctl_notify(ctx->ctl, MDP_NOTIFY_FRAME_DONE);
+
+		mdss_mdp_ctl_perf_release_bw(ctx->ctl);
+	}
 }
 
 static void clk_ctrl_work(struct work_struct *work)
@@ -458,7 +470,11 @@ static int mdss_mdp_cmd_wait4pingpong(struct mdss_mdp_ctl *ctl, void *arg)
 		rc = wait_for_completion_timeout(
 				&ctx->pp_comp, KOFF_TIMEOUT);
 
+#if defined (CONFIG_MACH_MSM8926_VFP_KR)
+		if (!is_fboot && rc <= 0) {
+#else
 		if (rc <= 0) {
+#endif
 			WARN(1, "cmd kickoff timed out (%d) ctl=%d\n",
 						rc, ctl->num);
 			rc = -EPERM;
@@ -564,8 +580,11 @@ int mdss_mdp_cmd_stop(struct mdss_mdp_ctl *ctl)
 				pr_err("no panel data\n");
 			} else {
 				pinfo = &ctl->panel_data->panel_info;
-
+#if defined (CONFIG_MACH_MSM8926_VFP_KR)
+				if (is_fboot || pinfo->panel_dead) {
+#else
 				if (pinfo->panel_dead) {
+#endif
 					mdss_mdp_irq_disable
 						(MDSS_MDP_IRQ_PING_PONG_RD_PTR,
 								ctx->pp_num);

@@ -1440,7 +1440,11 @@ static int vco_set_rate(struct clk *c, unsigned long rate)
 	pr_debug("%s:div_fb = %lld\n", __func__, div_fbx1000);
 	pr_debug("%s:frac_n_value = %lld\n", __func__, frac_n_value);
 
+#ifdef CONFIG_LGE_LCD_TUNING
+	pr_info("%s:Generated VCO Clock: %lld\n", __func__, gen_vco_clk);
+#else
 	pr_debug("%s:Generated VCO Clock: %lld\n", __func__, gen_vco_clk);
+#endif
 	rem = 0;
 	if (frac_n_mode) {
 		sdm_cfg0 = (0x0 << 5);

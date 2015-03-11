@@ -25,6 +25,10 @@
 #include "mmc_ops.h"
 #include "sd_ops.h"
 
+#if defined (CONFIG_LGE_MMC_PON_SLEEP_NOTI)
+int mmc_send_sleep_pon(struct mmc_card *card);
+#endif
+
 static const unsigned int tran_exp[] = {
 	10000,		100000,		1000000,	10000000,
 	0,		0,		0,		0
@@ -111,7 +115,19 @@ static int mmc_decode_cid(struct mmc_card *card)
 		card->cid.prod_name[5]	= UNSTUFF_BITS(resp, 56, 8);
 		card->cid.serial	= UNSTUFF_BITS(resp, 16, 32);
 		card->cid.month		= UNSTUFF_BITS(resp, 12, 4);
-		card->cid.year		= UNSTUFF_BITS(resp, 8, 4) + 1997;
+#ifdef CONFIG_MACH_LGE
+		/*           
+                                    
+                                         
+                                                      
+                                                   
+                                  
+   */
+		if(card->ext_csd.rev > 4)
+			card->cid.year		= UNSTUFF_BITS(resp, 8, 4) + 2013;
+		else
+#endif
+		card->cid.year      = UNSTUFF_BITS(resp, 8, 4) + 1997;
 		break;
 
 	default:
@@ -555,6 +571,14 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 			ext_csd[EXT_CSD_GENERIC_CMD6_TIME];
 		card->ext_csd.power_off_longtime = 10 *
 			ext_csd[EXT_CSD_POWER_OFF_LONG_TIME];
+
+		/* Sleep notification is supported from eMMC v5.0 */
+#if defined (CONFIG_LGE_MMC_PON_SLEEP_NOTI)	
+		if (card->ext_csd.rev >= 7) {
+			card->ext_csd.power_off_sleeptime = 1 << ext_csd[EXT_CSD_POWER_OFF_SLEEP_TIME];
+			card->ext_csd.power_off_sleeptime *= 10;
+		}
+#endif
 
 		card->ext_csd.cache_size =
 			ext_csd[EXT_CSD_CACHE_SIZE + 0] << 0 |
@@ -1332,6 +1356,8 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 	BUG_ON(!host);
 	WARN_ON(!host->claimed);
 
+	pr_debug("%s: %s\n", mmc_hostname(host), __func__);
+
 	/* Set correct bus mode for MMC before attempting init */
 	if (!mmc_host_is_spi(host))
 		mmc_set_bus_mode(host, MMC_BUSMODE_OPENDRAIN);
@@ -1417,9 +1443,15 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 		err = mmc_decode_csd(card);
 		if (err)
 			goto free_card;
+#ifndef CONFIG_MACH_LGE
+		/*           
+                                                                           
+                                   
+   */
 		err = mmc_decode_cid(card);
 		if (err)
 			goto free_card;
+#endif
 	}
 
 	/*
@@ -1443,6 +1475,15 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 		err = mmc_read_ext_csd(card, ext_csd);
 		if (err)
 			goto free_card;
+#ifdef CONFIG_MACH_LGE
+		/*           
+                     
+                                  
+   */
+		err = mmc_decode_cid(card);
+		if (err)
+			goto free_card;
+#endif
 
 		/* If doing byte addressing, check if required to do sector
 		 * addressing.  Handle the case of <2GB cards needing sector
@@ -1691,6 +1732,35 @@ int mmc_send_long_pon(struct mmc_card *card)
 	return err;
 }
 
+/*              
+                       
+                                         
+                                                                                                           
+ */
+#if defined (CONFIG_LGE_MMC_PON_SLEEP_NOTI)
+int mmc_send_sleep_pon(struct mmc_card *card)
+{
+	int err = 0;
+	unsigned int timeout = card->ext_csd.power_off_sleeptime;
+	struct mmc_host *host = card->host;
+
+	pr_info("%s: %s \n", mmc_hostname(host), __func__);
+
+	mmc_claim_host(host);
+
+	if (card->issue_long_pon && mmc_can_poweroff_notify(card)) {
+		err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
+				 EXT_CSD_POWER_OFF_NOTIFICATION,
+				 EXT_CSD_POWER_OFF_SLEEP, timeout);
+		if (err)
+			pr_err("%s: Power Off Notification timed out, %u\n",
+			       mmc_hostname(card->host), timeout);
+	}
+
+	mmc_release_host(host);
+	return err;
+}
+#endif
 /*
  * Host is being removed. Free up the current card.
  */
@@ -1698,6 +1768,8 @@ static void mmc_remove(struct mmc_host *host)
 {
 	BUG_ON(!host);
 	BUG_ON(!host->card);
+
+	pr_debug("%s: %s\n", mmc_hostname(host), __func__);
 
 	unregister_reboot_notifier(&host->card->reboot_notify);
 	mmc_remove_card(host->card);
@@ -1719,12 +1791,14 @@ static int mmc_alive(struct mmc_host *host)
 /*
  * Card detection callback from host.
  */
-static void mmc_detect(struct mmc_host *host)
+static int mmc_detect(struct mmc_host *host)
 {
 	int err;
 
 	BUG_ON(!host);
 	BUG_ON(!host->card);
+
+	pr_debug("%s: %s\n", mmc_hostname(host), __func__);
 
 	mmc_rpm_hold(host, &host->card->dev);
 	mmc_claim_host(host);
@@ -1751,6 +1825,7 @@ static void mmc_detect(struct mmc_host *host)
 		mmc_power_off(host);
 		mmc_release_host(host);
 	}
+	return 0;
 }
 
 /*
@@ -1799,6 +1874,8 @@ static int mmc_resume(struct mmc_host *host)
 	BUG_ON(!host);
 	BUG_ON(!host->card);
 
+	pr_debug("%s: %s\n", mmc_hostname(host), __func__);
+
 	mmc_claim_host(host);
 	err = mmc_init_card(host, host->ocr, host->card);
 	mmc_release_host(host);
@@ -1816,6 +1893,8 @@ static int mmc_resume(struct mmc_host *host)
 static int mmc_power_restore(struct mmc_host *host)
 {
 	int ret;
+	
+	pr_debug("%s: %s\n", mmc_hostname(host), __func__);
 
 	/* Disable clk scaling to avoid switching frequencies intermittently */
 	mmc_disable_clk_scaling(host);
@@ -1836,6 +1915,12 @@ static int mmc_sleep(struct mmc_host *host)
 	struct mmc_card *card = host->card;
 	int err = -ENOSYS;
 
+
+#if defined (CONFIG_LGE_MMC_PON_SLEEP_NOTI)
+	if (card->ext_csd.rev >= 7) 
+		mmc_send_sleep_pon(card);
+#endif
+	
 	if (card && card->ext_csd.rev >= 3) {
 		err = mmc_card_sleepawake(host, 1);
 		if (err < 0)
@@ -1906,6 +1991,8 @@ int mmc_attach_mmc(struct mmc_host *host)
 
 	BUG_ON(!host);
 	WARN_ON(!host->claimed);
+
+	pr_debug("%s: %s\n", mmc_hostname(host), __func__);
 
 	/* Set correct bus mode for MMC before attempting attach */
 	if (!mmc_host_is_spi(host))

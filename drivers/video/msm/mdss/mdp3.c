@@ -60,6 +60,19 @@
 #define MDP3_REG_CAPTURED_DSI_PCLK_MASK 1
 
 #define MDP_CORE_HW_VERSION	0x03040310
+
+#if defined(CONFIG_MACH_MSM8X10_L70P)
+#define MDP_CORE_CLK_RATE	150000000
+#else
+#define MDP_CORE_CLK_RATE	100000000
+#endif
+
+#if defined(CONFIG_LGE_LCD_DYNAMIC_LOG)
+uint32_t lcd_debug_level = 5;
+module_param_named(debug_level, lcd_debug_level, uint, S_IRUGO | S_IWUSR);
+MODULE_PARM_DESC(debug_level, "LCD debug_level");
+#endif
+
 struct mdp3_hw_resource *mdp3_res;
 
 #define MDP_BUS_VECTOR_ENTRY_DMA(ab_val, ib_val)		\
@@ -1853,6 +1866,7 @@ static int mdp3_continuous_splash_on(struct mdss_panel_data *pdata)
 
 	pr_debug("mdp3__continuous_splash_on\n");
 
+	mdp3_clk_set_rate(MDP3_CLK_CORE, MDP_CORE_CLK_RATE, MDP3_CLIENT_DMA_P);
 	mdp3_clk_set_rate(MDP3_CLK_VSYNC, MDP_VSYNC_CLK_RATE,
 			MDP3_CLIENT_DMA_P);
 
@@ -1871,10 +1885,14 @@ static int mdp3_continuous_splash_on(struct mdss_panel_data *pdata)
 		mdp3_clk_unprepare();
 		return rc;
 	}
-
+#if defined(CONFIG_MACH_MSM8X10_L70P)
+	ab = 0x3FFFFFFF;
+	ib = 0x3FFFFFFF;
+#else
 	ab = panel_info->xres * panel_info->yres * 4;
 	ab *= panel_info->mipi.frame_rate;
-	ib = (ab * 3) / 2;
+	ib = (ab * 5) / 2;
+#endif
 	rc = mdp3_bus_scale_set_quota(MDP3_CLIENT_DMA_P, ab, ib);
 	if (rc) {
 		pr_err("fail to request bus bandwidth\n");
@@ -1989,7 +2007,7 @@ static void mdp3_debug_deinit(struct platform_device *pdev)
 static void mdp3_dma_underrun_intr_handler(int type, void *arg)
 {
 	mdp3_res->underrun_cnt++;
-	pr_debug("display underrun detected count=%d\n",
+	pr_err("display underrun detected count=%d\n",
 			mdp3_res->underrun_cnt);
 }
 

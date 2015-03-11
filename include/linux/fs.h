@@ -23,7 +23,11 @@
 
 /* Fixed constants first: */
 #undef NR_OPEN
+#if 0
 #define INR_OPEN_CUR 1024	/* Initial setting for nfile rlimits */
+#else
+#define INR_OPEN_CUR 2048 /* 20140630 change open file count 1024 -> 2048 */
+#endif
 #define INR_OPEN_MAX 4096	/* Hard limit for nfile rlimits */
 
 #define BLOCK_SIZE_BITS 10

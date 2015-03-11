@@ -37,6 +37,8 @@
 #include <media/v4l2-ioctl.h>
 #include <media/radio-iris.h>
 #include <asm/unaligned.h>
+#include <linux/gpio.h> 
+
 
 static unsigned int rds_buf = 100;
 static int oda_agt;
@@ -493,6 +495,52 @@ static struct v4l2_queryctrl iris_v4l2_queryctrl[] = {
 	},
 };
 
+#if defined(CONFIG_LGE_ANT_SWITCH_FMRADIO_TDMB)
+	int ant_radio = 86;
+	int ant_count = 0;
+
+static void lge_radio_ant_enable(bool enable)
+{
+	int ret = 0;
+
+	printk("radio ant settings %d \n", enable);
+
+	if(enable)
+	{
+	//	ant_radio = of_get_named_gpio(ant_radio,"tdmb-fc8080,ant-gpio",0);
+
+		if(ant_count == 0)
+		{
+		 	ret = gpio_request(ant_radio, "FMRADIO_ANT");
+			if (ret < 0) 
+				printk("Failed to gpio_request gpio=%d (FMRADIO_ANT), status=%d\n", ant_radio, ret);	
+	
+			ret = gpio_direction_output(ant_radio, 1);
+			if (ret < 0) 
+				printk("Failed to gpio_direction_output gpio%d (FMRADIO_ANT), dir=%d, status=%d\n", ant_radio,1,ret);		
+
+		}
+		ant_count ++;
+	}
+	else
+	{
+		ant_count --;
+		if(!ant_count)
+		{
+		 	ret = gpio_request(ant_radio, "FMRADIO_ANT");
+			if (ret < 0) 
+				printk("Failed to gpio_request gpio=%d (FMRADIO_ANT), status=%d\n", ant_radio, ret);	
+	
+			ret = gpio_direction_output(ant_radio, 0);
+			if (ret < 0) 
+				printk("Failed to gpio_direction_output gpio%d (FMRADIO_ANT), dir=%d, status=%d\n", ant_radio,0,ret);		
+
+		}
+	}
+		
+}
+#endif
+
 static void iris_q_event(struct iris_device *radio,
 				enum iris_evt_t event)
 {
@@ -692,6 +740,10 @@ static int hci_fm_enable_recv_req(struct radio_hci_dev *hdev,
 {
 	__u16 opcode = 0;
 
+#if defined(CONFIG_LGE_ANT_SWITCH_FMRADIO_TDMB)
+	lge_radio_ant_enable(true);
+#endif
+
 	opcode = hci_opcode_pack(HCI_OGF_FM_RECV_CTRL_CMD_REQ,
 		HCI_OCF_FM_ENABLE_RECV_REQ);
 	return radio_hci_send_cmd(hdev, opcode, 0, NULL);
@@ -718,6 +770,10 @@ static int hci_fm_enable_trans_req(struct radio_hci_dev *hdev,
 {
 	__u16 opcode = 0;
 
+#if defined(CONFIG_LGE_ANT_SWITCH_FMRADIO_TDMB)
+	lge_radio_ant_enable(true);
+#endif
+
 	opcode = hci_opcode_pack(HCI_OGF_FM_TRANS_CTRL_CMD_REQ,
 		HCI_OCF_FM_ENABLE_TRANS_REQ);
 	return radio_hci_send_cmd(hdev, opcode, 0, NULL);
@@ -728,6 +784,9 @@ static int hci_fm_disable_recv_req(struct radio_hci_dev *hdev,
 {
 	__u16 opcode = 0;
 
+#if defined(CONFIG_LGE_ANT_SWITCH_FMRADIO_TDMB)
+	lge_radio_ant_enable(false);
+#endif
 	opcode = hci_opcode_pack(HCI_OGF_FM_RECV_CTRL_CMD_REQ,
 		HCI_OCF_FM_DISABLE_RECV_REQ);
 	return radio_hci_send_cmd(hdev, opcode, 0, NULL);
@@ -737,6 +796,10 @@ static int hci_fm_disable_trans_req(struct radio_hci_dev *hdev,
 	unsigned long param)
 {
 	__u16 opcode = 0;
+
+#if defined(CONFIG_LGE_ANT_SWITCH_FMRADIO_TDMB)
+	lge_radio_ant_enable(false);
+#endif
 
 	opcode = hci_opcode_pack(HCI_OGF_FM_TRANS_CTRL_CMD_REQ,
 		HCI_OCF_FM_DISABLE_TRANS_REQ);

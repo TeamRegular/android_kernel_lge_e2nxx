@@ -20,17 +20,18 @@
 #include <linux/module.h>
 #include <linux/uaccess.h>
 #include <linux/delay.h>
+#if defined(CONFIG_MACH_MSM8X10_L70P)
+#include <linux/gpio.h>
+#endif
 
 #include "mdp3_ctrl.h"
 #include "mdp3.h"
 #include "mdp3_ppp.h"
 
+
 #define VSYNC_EXPIRE_TICK	4
 
-static void mdp3_ctrl_pan_display(struct msm_fb_data_type *mfd,
-					struct mdp_overlay *req,
-					int image_size,
-					int *pipe_ndx);
+static void mdp3_ctrl_pan_display(struct msm_fb_data_type *mfd);
 static int mdp3_overlay_unset(struct msm_fb_data_type *mfd, int ndx);
 static int mdp3_histogram_stop(struct mdp3_session_data *session,
 					u32 block);
@@ -296,7 +297,7 @@ static ssize_t mdp3_vsync_show_event(struct device *dev,
 	vsync_ticks = ktime_to_ns(mdp3_session->vsync_time);
 
 	pr_debug("fb%d vsync=%llu", mfd->index, vsync_ticks);
-	rc = scnprintf(buf, PAGE_SIZE, "VSYNC=%llu", vsync_ticks);
+	rc = scnprintf(buf, PAGE_SIZE, "VSYNC=%llu\n", vsync_ticks);
 	return rc;
 }
 
@@ -310,6 +311,88 @@ static struct attribute *vsync_fs_attrs[] = {
 static struct attribute_group vsync_fs_attr_group = {
 	.attrs = vsync_fs_attrs,
 };
+
+#if defined(CONFIG_LGE_LCD_DYNAMIC_CLK_BW)
+static unsigned long core_clock = 150000000;
+static int average_bw = 0x3FFFFFFF;
+static int instantaneous_bw = 0x3FFFFFFF;
+
+static ssize_t store_mdp_core_clock(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count)
+{
+	char buffer[256] = {0, };
+	char *b = NULL;
+	char *conf_str = NULL;
+
+	strlcpy(buffer, buf, sizeof(buffer));
+	b = strim(buffer);
+
+	conf_str = strsep(&b, " ");
+	if(conf_str != NULL)
+		core_clock = simple_strtoul(conf_str, NULL, 0);
+		
+	printk(KERN_ERR "MDP core clock : %ld\n",core_clock);
+
+	return count;
+}
+
+static ssize_t show_mdp_core_clock(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	int ret;
+
+	ret = snprintf(buf, PAGE_SIZE, "MDP core clock : %ld\n",core_clock);
+
+	return ret;
+}
+
+static ssize_t store_bandwidth(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count)
+{
+	char buffer[256] = {0, };
+	char *b = NULL;
+	char *conf_str = NULL;
+
+	strlcpy(buffer, buf, sizeof(buffer));
+	b = strim(buffer);
+
+	conf_str = strsep(&b, " ");
+	if(conf_str != NULL)
+		average_bw = simple_strtoul(conf_str, NULL, 0);
+
+	conf_str = strsep(&b, " ");
+	if(conf_str != NULL)
+		instantaneous_bw = simple_strtoul(conf_str, NULL, 0);
+		
+	printk(KERN_ERR "ab : %d(0x%x) ib(0x%x) : %d\n",average_bw,average_bw,instantaneous_bw,instantaneous_bw);
+
+	return count;
+}
+
+static ssize_t show_bandwidth(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	int ret;
+
+	ret = snprintf(buf, PAGE_SIZE, "ab(0x%x) : %d ib(0x%x) : %d\n",average_bw,average_bw,instantaneous_bw,instantaneous_bw);
+
+	return ret;
+}
+
+static DEVICE_ATTR(mdp_core_clock, S_IRUGO| S_IWUSR | S_IWGRP, show_mdp_core_clock, store_mdp_core_clock);
+static DEVICE_ATTR(bandwidth, S_IRUGO | S_IWUSR | S_IWGRP, show_bandwidth, store_bandwidth);
+
+static struct attribute *dynamic_clk_bw_sysfs_attrs[] = {
+	&dev_attr_mdp_core_clock.attr,
+	&dev_attr_bandwidth.attr,
+	NULL,
+};
+
+static struct attribute_group dynamic_clk_bw_sysfs_group = {
+	.attrs = dynamic_clk_bw_sysfs_attrs,
+};
+
+#endif
 
 static int mdp3_ctrl_clk_enable(struct msm_fb_data_type *mfd, int enable)
 {
@@ -342,12 +425,17 @@ static int mdp3_ctrl_res_req_bus(struct msm_fb_data_type *mfd, int status)
 {
 	int rc = 0;
 	if (status) {
+#if defined(CONFIG_LGE_LCD_DYNAMIC_CLK_BW)
+		int ab = average_bw;
+		int ib = instantaneous_bw;
+#else
 		struct mdss_panel_info *panel_info = mfd->panel_info;
 		int ab = 0;
 		int ib = 0;
 		ab = panel_info->xres * panel_info->yres * 4;
 		ab *= panel_info->mipi.frame_rate;
-		ib = (ab * 3) / 2;
+		ib = (ab * 5) / 2;
+#endif
 		rc = mdp3_bus_scale_set_quota(MDP3_CLIENT_DMA_P, ab, ib);
 	} else {
 		rc = mdp3_bus_scale_set_quota(MDP3_CLIENT_DMA_P, 0, 0);
@@ -360,8 +448,13 @@ static int mdp3_ctrl_res_req_clk(struct msm_fb_data_type *mfd, int status)
 	int rc = 0;
 	if (status) {
 
+#if defined(CONFIG_LGE_LCD_DYNAMIC_CLK_BW)
+		mdp3_clk_set_rate(MDP3_CLK_CORE, core_clock,
+				MDP3_CLIENT_DMA_P);
+#else
 		mdp3_clk_set_rate(MDP3_CLK_CORE, MDP_CORE_CLK_RATE,
 				MDP3_CLIENT_DMA_P);
+#endif
 		mdp3_clk_set_rate(MDP3_CLK_VSYNC, MDP_VSYNC_CLK_RATE,
 				MDP3_CLIENT_DMA_P);
 
@@ -556,7 +649,7 @@ static int mdp3_ctrl_on(struct msm_fb_data_type *mfd)
 	struct mdp3_session_data *mdp3_session;
 	struct mdss_panel_data *panel;
 
-	pr_debug("mdp3_ctrl_on\n");
+	pr_info("mdp3_ctrl_on++\n");
 	mdp3_session = (struct mdp3_session_data *)mfd->mdp.private1;
 	if (!mdp3_session || !mdp3_session->panel || !mdp3_session->dma ||
 		!mdp3_session->intf) {
@@ -643,7 +736,7 @@ static int mdp3_ctrl_off(struct msm_fb_data_type *mfd)
 	struct mdp3_session_data *mdp3_session;
 	struct mdss_panel_data *panel;
 
-	pr_debug("mdp3_ctrl_off\n");
+	pr_info("mdp3_ctrl_off++\n");
 	mdp3_session = (struct mdp3_session_data *)mfd->mdp.private1;
 	if (!mdp3_session || !mdp3_session->panel || !mdp3_session->dma ||
 		!mdp3_session->intf) {
@@ -661,17 +754,25 @@ static int mdp3_ctrl_off(struct msm_fb_data_type *mfd)
 
 	mdp3_ctrl_clk_enable(mfd, 1);
 
+#if defined(CONFIG_MACH_MSM8X10_L70P)
+	if (panel->event_handler)
+		rc = panel->event_handler(panel, MDSS_EVENT_PANEL_OFF, NULL);
+	if (rc)
+		pr_err("fail to turn off the panel\n");
+#endif
+
 	mdp3_histogram_stop(mdp3_session, MDP_BLOCK_DMA_P);
 
 	rc = mdp3_session->dma->stop(mdp3_session->dma, mdp3_session->intf);
 	if (rc)
 		pr_debug("fail to stop the MDP3 dma\n");
 
-
+#if !defined(CONFIG_MACH_MSM8X10_L70P)
 	if (panel->event_handler)
 		rc = panel->event_handler(panel, MDSS_EVENT_PANEL_OFF, NULL);
 	if (rc)
 		pr_err("fail to turn off the panel\n");
+#endif
 
 	mdp3_irq_deregister();
 
@@ -844,6 +945,15 @@ static int mdp3_ctrl_reset(struct msm_fb_data_type *mfd)
 	if (vsync_client.handler)
 		mdp3_dma->vsync_enable(mdp3_dma, &vsync_client);
 
+#if defined(CONFIG_MACH_MSM8X10_L70P)
+	if(mfd->panel_power_on)
+	{
+		printk(KERN_INFO"[%s][%d][touch] mdp reset ======",__func__,__LINE__);
+		gpio_set_value(0,0);
+		mdelay(200);
+		gpio_set_value(0,1);
+	}
+#endif
 	mdp3_session->first_commit = true;
 
 reset_error:
@@ -869,6 +979,15 @@ static int mdp3_overlay_get(struct msm_fb_data_type *mfd,
 	return rc;
 }
 
+#if defined (CONFIG_MACH_MSM8X10_W5) || defined (CONFIG_MACH_MSM8X10_W6) || defined (CONFIG_MACH_MSM8X10_L70P)
+/* At booting up, Between LG Logo and Operation Animation showing, abnormal LG Logo is appearing one time.
+Because LG Logo image format is RGB888, Android side image format is RGBA8888, both Image formats are mismatched.
+So, We add the code to change MDP_RGBA_8888 to MDP_RGB_888 when is_done_drawing_logo is not "1".
+is_done_drawing_logo is set to 1 at mdss_dsi_panel_off. 
+*/
+extern char is_done_drawing_logo;
+#endif
+
 static int mdp3_overlay_set(struct msm_fb_data_type *mfd,
 				struct mdp_overlay *req)
 {
@@ -881,6 +1000,18 @@ static int mdp3_overlay_set(struct msm_fb_data_type *mfd,
 	int format;
 
 	fix = &fbi->fix;
+
+#if defined (CONFIG_MACH_MSM8X10_W5) || defined (CONFIG_MACH_MSM8X10_W6) || defined (CONFIG_MACH_MSM8X10_L70P)
+/* At booting up, Between LG Logo and Operation Animation showing, abnormal LG Logo is appearing one time.
+Because LG Logo image format is RGB888, Android side image format is RGBA8888, both Image formats are mismatched.
+So, We add the code to change MDP_RGBA_8888 to MDP_RGB_888 when is_done_drawing_logo is not "1".
+is_done_drawing_logo is set to 1 at mdss_dsi_panel_off. 
+*/
+	if (!is_done_drawing_logo) {
+		req->src.format = MDP_RGB_888;
+	}
+#endif
+
 	stride = req->src.width * ppp_bpp(req->src.format);
 	format = mdp3_ctrl_get_source_format(req->src.format);
 
@@ -1062,9 +1193,13 @@ static int mdp3_ctrl_display_commit_kickoff(struct msm_fb_data_type *mfd,
 		mdp3_session->first_commit = false;
 	}
 
-	mdp3_session->vsync_before_commit = 0;
-	if (reset_done && (panel && panel->set_backlight))
+        mdp3_session->vsync_before_commit = 0;
+	if (reset_done && (panel && panel->set_backlight)){
+#if defined(CONFIG_FB_MSM_MIPI_TIANMA_CMD_HVGA_PT) || defined(CONFIG_MACH_MSM8X10_L70P)
+        msleep(1);
+#endif
 		panel->set_backlight(panel, panel->panel_info.bl_max);
+	}
 
 	mutex_unlock(&mdp3_session->lock);
 
@@ -1073,17 +1208,19 @@ static int mdp3_ctrl_display_commit_kickoff(struct msm_fb_data_type *mfd,
 	return 0;
 }
 
-static void mdp3_ctrl_pan_display(struct msm_fb_data_type *mfd,
-					struct mdp_overlay *req,
-					int image_size,
-					int *pipe_ndx)
+static void mdp3_ctrl_pan_display(struct msm_fb_data_type *mfd)
 {
 	struct fb_info *fbi;
 	struct mdp3_session_data *mdp3_session;
 	u32 offset;
 	int bpp;
 	struct mdss_panel_info *panel_info = mfd->panel_info;
-	int rc;
+        int rc;
+
+#if defined(CONFIG_FB_MSM_MIPI_TIANMA_CMD_HVGA_PT) || defined(CONFIG_MACH_MSM8X10_W5) || defined(CONFIG_MACH_MSM8X10_W6) || defined(CONFIG_MACH_MSM8X10_L70P)
+	bool reset_done = false;
+	struct mdss_panel_data *panel;
+#endif
 
 	pr_debug("mdp3_ctrl_pan_display\n");
 	if (!mfd || !mfd->mdp.private1)
@@ -1093,9 +1230,15 @@ static void mdp3_ctrl_pan_display(struct msm_fb_data_type *mfd,
 	if (!mdp3_session || !mdp3_session->dma)
 		return;
 
+#if defined(CONFIG_FB_MSM_MIPI_TIANMA_CMD_HVGA_PT) || defined(CONFIG_MACH_MSM8X10_W5) || defined(CONFIG_MACH_MSM8X10_W6) || defined(CONFIG_MACH_MSM8X10_L70P)
+	panel = mdp3_session->panel;
+#endif
 	if (!mdp3_iommu_is_attached(MDP3_CLIENT_DMA_P)) {
 		pr_debug("continuous splash screen, IOMMU not attached\n");
 		mdp3_ctrl_reset(mfd);
+#if defined(CONFIG_FB_MSM_MIPI_TIANMA_CMD_HVGA_PT) || defined(CONFIG_MACH_MSM8X10_W5) || defined(CONFIG_MACH_MSM8X10_W6) || defined(CONFIG_MACH_MSM8X10_L70P)
+		reset_done = true;
+#endif
 	}
 
 	mutex_lock(&mdp3_session->lock);
@@ -1148,6 +1291,12 @@ static void mdp3_ctrl_pan_display(struct msm_fb_data_type *mfd,
 		msleep(1000 / panel_info->mipi.frame_rate);
 		mdp3_session->first_commit = false;
 	}
+
+	#if defined(CONFIG_FB_MSM_MIPI_TIANMA_CMD_HVGA_PT) || defined(CONFIG_MACH_MSM8X10_W5) || defined(CONFIG_MACH_MSM8X10_W6) || defined(CONFIG_MACH_MSM8X10_L70P)
+	if (reset_done && (panel && panel->set_backlight)){
+		panel->set_backlight(panel, panel->panel_info.bl_max);
+    }
+#endif
 
 	mdp3_session->vsync_before_commit = 0;
 
@@ -1796,6 +1945,14 @@ int mdp3_ctrl_init(struct msm_fb_data_type *mfd)
 		pr_err("vsync sysfs group creation failed, ret=%d\n", rc);
 		goto init_done;
 	}
+#if defined(CONFIG_LGE_LCD_DYNAMIC_CLK_BW)
+	rc = sysfs_create_group(&dev->kobj, &dynamic_clk_bw_sysfs_group);
+	if (rc) {
+		pr_err("dynamic clk bw sysfs group creation failed, ret=%d\n", rc);
+		goto init_done;
+	}
+
+#endif
 
 	mdp3_session->vsync_event_sd = sysfs_get_dirent(dev->kobj.sd, NULL,
 							"vsync_event");

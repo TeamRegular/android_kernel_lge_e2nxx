@@ -346,10 +346,27 @@ static void msm_vfe40_init_hardware_reg(struct vfe_device *vfe_dev)
 	msm_camera_io_w(0xC001FF7F, vfe_dev->vfe_base + 0x974);
 	/* BUS_CFG */
 	msm_camera_io_w(0x10000001, vfe_dev->vfe_base + 0x50);
+
+/*                                                                                          */
+#ifdef CONFIG_LG_PROXY /*                      */
+	msm_camera_io_w(0xF80000F3, vfe_dev->vfe_base + 0x28);
+#else // original
 	msm_camera_io_w(0xE00000F3, vfe_dev->vfe_base + 0x28);
+#endif
+/*                                                                                          */
+
 	msm_camera_io_w_mb(0xFEFFFFFF, vfe_dev->vfe_base + 0x2C);
 	msm_camera_io_w(0xFFFFFFFF, vfe_dev->vfe_base + 0x30);
 	msm_camera_io_w_mb(0xFEFFFFFF, vfe_dev->vfe_base + 0x34);
+
+#ifdef CONFIG_LG_PROXY /*                      */
+/*                                                                                     */
+	msm_camera_io_w(1, vfe_dev->vfe_base + 0x24);
+	msm_camera_io_w(0, vfe_dev->vfe_base + 0x30);
+	msm_camera_io_w_mb(0, vfe_dev->vfe_base + 0x34);
+	msm_camera_io_w(1, vfe_dev->vfe_base + 0x24);
+/*                                                                                     */
+#endif
 }
 
 static void msm_vfe40_process_reset_irq(struct vfe_device *vfe_dev,
@@ -600,7 +617,7 @@ static long msm_vfe40_reset_hardware(struct vfe_device *vfe_dev ,
 	init_completion(&vfe_dev->reset_complete);
 	msm_camera_io_w_mb(rst_val, vfe_dev->vfe_base + 0xC);
 	return wait_for_completion_interruptible_timeout(
-		&vfe_dev->reset_complete, msecs_to_jiffies(50));
+		&vfe_dev->reset_complete, msecs_to_jiffies(100)); /*                                                                                                                           */
 }
 
 static void msm_vfe40_axi_reload_wm(
@@ -642,6 +659,21 @@ static void msm_vfe40_axi_cfg_comp_mask(struct vfe_device *vfe_dev,
 	 * For dual VFE, composite 2/3 interrupt is used to trigger
 	 * microcontroller to update certain VFE registers
 	 */
+
+/*                                                                                          */
+#ifdef CONFIG_LG_PROXY /*                      */
+	if (stream_info->stream_src == PIX_VIEWFINDER) {
+		comp_mask |= (axi_data->composite_info[comp_mask_index].
+		stream_composite_mask << 16);
+		irq_mask |= BIT(27);
+	}
+
+	if (stream_info->stream_src == PIX_ENCODER) {
+		comp_mask |= (axi_data->composite_info[comp_mask_index].
+		stream_composite_mask << 24);
+		irq_mask |= BIT(28);
+	}
+#else // original
 	if (stream_info->plane_cfg[0].plane_addr_offset &&
 		stream_info->stream_src == PIX_VIEWFINDER) {
 		comp_mask |= (axi_data->composite_info[comp_mask_index].
@@ -655,6 +687,9 @@ static void msm_vfe40_axi_cfg_comp_mask(struct vfe_device *vfe_dev,
 		stream_composite_mask << 24);
 		irq_mask |= BIT(28);
 	}
+#endif
+/*                                                                                          */
+
 
 	msm_camera_io_w(comp_mask, vfe_dev->vfe_base + 0x40);
 	msm_camera_io_w(irq_mask, vfe_dev->vfe_base + 0x28);
@@ -673,6 +708,20 @@ static void msm_vfe40_axi_clear_comp_mask(struct vfe_device *vfe_dev,
 	irq_mask = msm_camera_io_r(vfe_dev->vfe_base + 0x28);
 	irq_mask &= ~(1 << (comp_mask_index + 25));
 
+/*                                                                                          */
+#ifdef CONFIG_LG_PROXY /*                      */
+	if (stream_info->stream_src == PIX_VIEWFINDER) {
+		comp_mask &= ~(axi_data->composite_info[comp_mask_index].
+		stream_composite_mask << 16);
+		irq_mask &= ~BIT(27);
+	}
+
+	if (stream_info->stream_src == PIX_ENCODER) {
+		comp_mask &= ~(axi_data->composite_info[comp_mask_index].
+		stream_composite_mask << 24);
+		irq_mask &= ~BIT(28);
+	}
+#else // original
 	if (stream_info->plane_cfg[0].plane_addr_offset &&
 		stream_info->stream_src == PIX_VIEWFINDER) {
 		comp_mask &= ~(axi_data->composite_info[comp_mask_index].
@@ -686,6 +735,8 @@ static void msm_vfe40_axi_clear_comp_mask(struct vfe_device *vfe_dev,
 		stream_composite_mask << 24);
 		irq_mask &= ~BIT(28);
 	}
+#endif
+	/*                                                                                          */
 
 	msm_camera_io_w(comp_mask, vfe_dev->vfe_base + 0x40);
 	msm_camera_io_w(irq_mask, vfe_dev->vfe_base + 0x28);
@@ -900,6 +951,13 @@ static void msm_vfe40_update_camif_state(struct vfe_device *vfe_dev,
 		vfe_dev->axi_data.src_info[VFE_PIX_0].active = 0;
 	} else if (update_state == DISABLE_CAMIF_IMMEDIATELY) {
 		msm_camera_io_w_mb(0x6, vfe_dev->vfe_base + 0x2F4);
+/*                                                                               */
+#if defined(CONFIG_HI351)
+		vfe_dev->hw_info->vfe_ops.axi_ops.halt(vfe_dev);
+		vfe_dev->hw_info->vfe_ops.core_ops.reset_hw(vfe_dev,ISP_RST_SOFT);
+		vfe_dev->hw_info->vfe_ops.core_ops.init_hw_reg(vfe_dev);
+#endif
+/*                                                                               */
 		vfe_dev->axi_data.src_info[VFE_PIX_0].active = 0;
 	}
 }
@@ -1064,7 +1122,9 @@ static void msm_vfe40_axi_clear_wm_xbar_reg(
 		vfe_dev->vfe_base + VFE40_XBAR_BASE(wm));
 }
 
-#define MSM_ISP40_TOTAL_WM_UB 819
+//#define MSM_ISP40_TOTAL_WM_UB 819
+#define MSM_ISP40_TOTAL_WM_UB 1140
+
 
 static void msm_vfe40_cfg_axi_ub_equal_default(
 	struct vfe_device *vfe_dev)
@@ -1078,7 +1138,10 @@ static void msm_vfe40_cfg_axi_ub_equal_default(
 	uint32_t prop_size = 0;
 	uint32_t wm_ub_size;
 	uint32_t delta;
+	uint64_t temp;  /*                                                                        */
 
+	pr_err("%s \n", __func__);
+	
 	for (i = 0; i < axi_data->hw_info->num_wm; i++) {
 		if (axi_data->free_wm[i] > 0) {
 			num_used_wms++;
@@ -1089,9 +1152,17 @@ static void msm_vfe40_cfg_axi_ub_equal_default(
 		axi_data->hw_info->min_wm_ub * num_used_wms;
 	for (i = 0; i < axi_data->hw_info->num_wm; i++) {
 		if (axi_data->free_wm[i]) {
-			delta =
-				(axi_data->wm_image_size[i] *
-					prop_size)/total_image_size;
+/*                                                                          */
+//			delta =
+//				(axi_data->wm_image_size[i] *
+//					prop_size)/total_image_size;
+			temp = (uint64_t)axi_data->wm_image_size[i] * prop_size;
+			do_div(temp,total_image_size);
+			//pr_err("_debug_: i = %d, old delta = %u, new delta = %u\n", i, delta, ((uint32_t) temp) );
+			delta = (uint32_t)temp;
+/*                                                                          */
+
+			
 			wm_ub_size = axi_data->hw_info->min_wm_ub + delta;
 			msm_camera_io_w(ub_offset << 16 | (wm_ub_size - 1),
 				vfe_dev->vfe_base + VFE40_WM_BASE(i) + 0x10);
@@ -1118,7 +1189,7 @@ static void msm_vfe40_cfg_axi_ub_equal_slicing(
 static void msm_vfe40_cfg_axi_ub(struct vfe_device *vfe_dev)
 {
 	struct msm_vfe_axi_shared_data *axi_data = &vfe_dev->axi_data;
-	axi_data->wm_ub_cfg_policy = MSM_WM_UB_EQUAL_SLICING;
+	//axi_data->wm_ub_cfg_policy = MSM_WM_UB_EQUAL_SLICING;
 	if (axi_data->wm_ub_cfg_policy == MSM_WM_UB_EQUAL_SLICING)
 		msm_vfe40_cfg_axi_ub_equal_slicing(vfe_dev);
 	else
