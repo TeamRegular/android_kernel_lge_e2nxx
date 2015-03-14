@@ -5,4 +5,5 @@
 ihex2fw
 atmel/*.ihex
 melfas/*/*.txt.ihex
+melfas/*/*/*.ihex
 synaptics/*/*.ihex

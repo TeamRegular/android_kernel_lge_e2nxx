@@ -134,9 +134,12 @@ fw-shipped-$(CONFIG_TOUCHSCREEN_LGE_MELFAS) += $(touch_fw_files)
 endif
 
 ifdef CONFIG_TOUCHSCREEN_APS_MIT200_E2
-mit200_fw_file := $(wildcard $(srctree)/firmware/melfas/mit200/e2/*)
-mit200_firmware := $(subst $(srctree)/firmware/,,$(mit200_fw_file))
-fw-shipped-$(CONFIG_TOUCHSCREEN_APS_MIT200_E2) += $(mit200_firmware)
+mit200_fw_file := $(wildcard $(srctree)/firmware/melfas/mit200/e2/*.fw)
+$(foreach var, $(mit200_fw_file),  $(shell objcopy -I binary -O ihex $(var) $(var).ihex))
+
+mit200_fw_list := $(subst .ihex, , $(notdir $(wildcard $(srctree)/firmware/melfas/mit200/e2/*.ihex)))
+mit200_fw_files := $(foreach var, $(mit200_fw_list), melfas/mit200/e2/$(var))
+fw-shipped-$(CONFIG_TOUCHSCREEN_APS_MIT200_E2) += $(mit200_fw_files)
 endif
 
 synaptics_img_file := $(wildcard $(srctree)/firmware/synaptics/$(TARGET_PRODUCT)/*.img)
