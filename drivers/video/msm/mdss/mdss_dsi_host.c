@@ -27,15 +27,7 @@
 #include "mdss_dsi.h"
 #include "mdss_panel.h"
 
-#ifdef CONFIG_FB_MSM_MIPI_LGD_LH500WX9_VIDEO_HD_PT_PANEL
-#include "mdss_debug.h"
-#endif
-
 #define VSYNC_PERIOD 17
-
-#if defined (CONFIG_MACH_MSM8926_VFP_KR)
-extern int is_fboot;
-#endif
 
 static struct mdss_dsi_ctrl_pdata *left_ctrl_pdata;
 
@@ -333,11 +325,7 @@ void mdss_dsi_host_init(struct mipi_panel_info *pinfo,
 	if (ctrl_pdata->shared_pdata.broadcast_enable)
 		MIPI_OUTP(ctrl_pdata->ctrl_base + 0x3C, 0x94000000);
 	else
-#if defined(CONFIG_FB_MSM_MIPI_LGD_LH500WX9_VIDEO_HD_PT_PANEL)
-		MIPI_OUTP(ctrl_pdata->ctrl_base + 0x3C, 0x10000000);
-#else
 		MIPI_OUTP(ctrl_pdata->ctrl_base + 0x3C, 0x14000000);
-#endif
 
 #if defined(CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL)
 	MIPI_OUTP(ctrl_pdata->ctrl_base + 0xBC, 0xFFFFF);
@@ -1010,11 +998,8 @@ end:
 	return rp->len;
 }
 
-#ifdef CONFIG_FB_MSM_MIPI_LGD_LH500WX9_VIDEO_HD_PT_PANEL
-#define DMA_TX_TIMEOUT 20000
-#else
 #define DMA_TX_TIMEOUT 200
-#endif
+
 static int mdss_dsi_cmd_dma_tx(struct mdss_dsi_ctrl_pdata *ctrl,
 					struct dsi_buf *tp)
 {
@@ -1163,9 +1148,7 @@ void mdss_dsi_cmd_mdp_busy(struct mdss_dsi_ctrl_pdata *ctrl)
 {
 	unsigned long flags;
 	int need_wait = 0;
-#if defined (CONFIG_MACH_MSM8926_VFP_KR)
-	int ret;
-#endif
+
 	pr_debug("%s: start pid=%d\n",
 				__func__, current->pid);
 	spin_lock_irqsave(&ctrl->mdp_lock, flags);
@@ -1177,16 +1160,9 @@ void mdss_dsi_cmd_mdp_busy(struct mdss_dsi_ctrl_pdata *ctrl)
 		/* wait until DMA finishes the current job */
 		pr_debug("%s: pending pid=%d\n",
 				__func__, current->pid);
-#if defined (CONFIG_MACH_MSM8926_VFP_KR)
-	ret = wait_for_completion_timeout(&ctrl->mdp_comp,
-			msecs_to_jiffies(DMA_TX_TIMEOUT));
-	if (!is_fboot && ret <= 0)
-		WARN(1, "mdp busy timeout\n");
-#else
 		if (!wait_for_completion_timeout(&ctrl->mdp_comp,
 					msecs_to_jiffies(DMA_TX_TIMEOUT)))
 			pr_err("%s: timeout error\n", __func__);
-#endif
 	}
 	pr_debug("%s: done pid=%d\n",
 				__func__, current->pid);

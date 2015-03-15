@@ -24,9 +24,6 @@
 #define DMA_CCS_CONFIG_MASK 0xfffffc17
 #define HIST_WAIT_TIMEOUT(frame) ((75 * HZ * (frame)) / 1000)
 
-#if defined(CONFIG_MACH_MSM8X10_L70P)
-extern int check_status_func(void);
-#endif
 static void mdp3_vsync_intr_handler(int type, void *arg)
 {
 	struct mdp3_dma *dma = (struct mdp3_dma *)arg;
@@ -47,9 +44,6 @@ static void mdp3_vsync_intr_handler(int type, void *arg)
 		if (wait_for_next_vs)
 			mdp3_irq_disable_nosync(type);
 	}
-#if defined(CONFIG_MACH_MSM8X10_L70P)
-	check_status_func();
-#endif
 }
 
 static void mdp3_dma_done_intr_handler(int type, void *arg)
