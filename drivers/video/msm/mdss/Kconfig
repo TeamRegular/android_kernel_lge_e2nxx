@@ -40,10 +40,6 @@ config LGE_LCD_DCDC
         tristate "Display Mode - DCDC Mode Enable "
         default n
 
-config LCD_KCAL
-        bool "Enable sysfs for LCD KCAL"
-        default n
-
 config LGE_LCD_TUNING
 	bool "Enable sysfs for LCD TUNING"
 	default n

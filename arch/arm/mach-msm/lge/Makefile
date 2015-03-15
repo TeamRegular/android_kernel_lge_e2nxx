@@ -135,7 +135,6 @@ endif
 endif
 endif
 
-obj-$(CONFIG_MACH_LGE) += lge_kcal_ctrl.o
 obj-$(CONFIG_LGE_LCD_TUNING) += lge_lcd_misc_ctrl.o
 
 obj-$(CONFIG_LGE_QSDL_SUPPORT) += lge_qsdl.o

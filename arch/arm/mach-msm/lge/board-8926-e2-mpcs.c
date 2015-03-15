@@ -53,11 +53,6 @@
 #include "../pm.h"
 #include "../modem_notifier.h"
 #include <mach/board_lge.h>
-#if defined(CONFIG_LCD_KCAL)
-#include <linux/module.h>
-#include "../../../../drivers/video/msm/mdss/mdss_fb.h"
-extern int update_preset_lcdc_lut(void);
-#endif
 
 #ifdef CONFIG_LGE_LCD_TUNING
 #include "../../../../drivers/video/msm/mdss/mdss_dsi.h"
@@ -235,54 +230,6 @@ static void __init msm8226_reserve(void)
 	lge_reserve();
 #endif
 }
-#if defined(CONFIG_LCD_KCAL)
-extern int g_kcal_r;
-extern int g_kcal_g;
-extern int g_kcal_b;
-
-int kcal_set_values(int kcal_r, int kcal_g, int kcal_b)
-{
-	g_kcal_r = kcal_r;
-	g_kcal_g = kcal_g;
-	g_kcal_b = kcal_b;
-	printk("kcal_set_values ::: red=[%d], green=[%d], blue=[%d]\n", g_kcal_r, g_kcal_g, g_kcal_b);
-	return 0;
-}
-
-static int kcal_get_values(int *kcal_r, int *kcal_g, int *kcal_b)
-{
-	*kcal_r = g_kcal_r;
-	*kcal_g = g_kcal_g;
-	*kcal_b = g_kcal_b;
-	printk("kcal_get_values\n");
-	return 0;
-}
-
-static int kcal_refresh_values(void)
-{
-	printk("kcal_refresh_values\n");
-	return update_preset_lcdc_lut();
-}
-
-static struct kcal_platform_data kcal_pdata = {
-	.set_values = kcal_set_values,
-	.get_values = kcal_get_values,
-	.refresh_display = kcal_refresh_values
-};
-
-static struct platform_device kcal_platrom_device = {
-	.name   = "kcal_ctrl",
-	.dev = {
-		.platform_data = &kcal_pdata,
-	}
-};
-
-void __init lge_add_lcd_kcal_devices(void)
-{
-	pr_info (" KCAL_DEBUG : %s \n", __func__);
-	platform_device_register(&kcal_platrom_device);
-}
-#endif
 
 #if defined(CONFIG_PRE_SELF_DIAGNOSIS)
 int pre_selfd_set_values(int kcal_r, int kcal_g, int kcal_b)
@@ -348,9 +295,6 @@ void __init msm8226_add_drivers(void)
 #endif
 #if defined(CONFIG_LGE_LCD_TUNING)
 	lge_add_lcd_misc_devices();
-#endif
-#if defined(CONFIG_LCD_KCAL)
-	 lge_add_lcd_kcal_devices();
 #endif
 
 #ifdef CONFIG_LGE_QFPROM_INTERFACE
