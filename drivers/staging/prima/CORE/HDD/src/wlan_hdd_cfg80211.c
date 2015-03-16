@@ -672,7 +672,7 @@ int wlan_hdd_cfg80211_init(struct device *dev,
        || pCfg->isCcxIniFeatureEnabled
 #endif
     )
-#if 0  // LGE_CHANGE, hyunseong.lee@lge.com, Do not use SUPPORTS_FW_ROMA because we support BSSID selection by wpa_supplicant. SR_01496649
+#if 0  //                                                                                                                                 
     {
         wiphy->flags |= WIPHY_FLAG_SUPPORTS_FW_ROAM;
     }
@@ -1027,12 +1027,12 @@ int wlan_hdd_cfg80211_alloc_new_beacon(hdd_adapter_t *pAdapter,
     if (!params->head && !old)
         return -EINVAL;
 
-/* LGE_CHANGE_S, yeonho.park, 2014-01-08, SoftAP b mode patch by QCT Case No. 01350976 */
+/*                                                                                     */
 #if 0
     if (params->tail && !params->tail_len)
         return -EINVAL;
 #endif
-/* LGE_CHANGE_E, yeonho.park, 2014-01-08, SoftAP b mode patch by QCT Case No. 01350976 */
+/*                                                                                     */
 
 
 #if (LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,38))

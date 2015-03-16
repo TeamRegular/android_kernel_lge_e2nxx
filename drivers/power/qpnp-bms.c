@@ -133,8 +133,8 @@ struct fcc_sample {
 struct bms_irq {
 	int		irq;
 	unsigned long	disabled;
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
@@ -372,7 +372,7 @@ static int check_use_external_fuelgauge(struct qpnp_bms_chip *chip)
 	if(chip->bms_psy_registered)
 	{
 		ret = chip->bms_psy.use_external_fuelgauge;
-		//pr_err("[LGE] use_external_fuelgauge is %d!!!\n",chip->bms_psy.use_external_fuelgauge);
+		//                                                                                       
 	}
 	else
 	{
@@ -386,7 +386,7 @@ static int set_use_external_fuelgauge(struct qpnp_bms_chip *chip, int val)
 	if(chip->bms_psy_registered)
 	{
 		chip->bms_psy.use_external_fuelgauge = val;
-		//pr_err("[LGE] use_external_fuelgauge is %d\n!!!\n",chip->bms_psy.use_external_fuelgauge);
+		//                                                                                         
 		ret = 0;
 	}
 	else
@@ -490,8 +490,8 @@ static void bms_relax(struct bms_wakeup_source *source)
 
 static void enable_bms_irq(struct bms_irq *irq)
 {
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
@@ -507,8 +507,8 @@ static void enable_bms_irq(struct bms_irq *irq)
 
 static void disable_bms_irq(struct bms_irq *irq)
 {
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
@@ -524,8 +524,8 @@ static void disable_bms_irq(struct bms_irq *irq)
 
 static void disable_bms_irq_nosync(struct bms_irq *irq)
 {
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
@@ -613,8 +613,8 @@ static int convert_vbatt_uv_to_raw(struct qpnp_bms_chip *chip,
 						+ VADC_INTRINSIC_OFFSET;
 }
 
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
@@ -633,8 +633,8 @@ static inline int convert_vbatt_raw_to_uv(struct qpnp_bms_chip *chip,
 	pr_debug("%u raw converted into %lld uv\n", reading, uv);
 	uv = adjust_vbatt_reading(chip, uv);
 	pr_debug("adjusted into %lld uv\n", uv);
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
@@ -874,8 +874,8 @@ static int calib_vadc(struct qpnp_bms_chip *chip)
 	return 0;
 }
 
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
@@ -898,8 +898,8 @@ static void convert_and_store_ocv(struct qpnp_bms_chip *chip,
 	if (rc)
 		pr_err("Vadc reference voltage read failed, rc = %d\n", rc);
 	chip->prev_last_good_ocv_raw = raw->last_good_ocv_raw;
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
@@ -957,8 +957,8 @@ static int get_battery_status(struct qpnp_bms_chip *chip)
 	if (chip->batt_psy) {
 		/* if battery has been registered, use the status property */
 #ifdef CONFIG_LGE_PM
-		/*  batt_psy 's POWER_SUPPLY_PROP_STATUS node is modified by LGE
-		to report FULL status at 100 SOC, even if actually phone is charging */
+		/*                                                              
+                                                                       */
 		chip->batt_psy->get_property(chip->batt_psy,
 					POWER_SUPPLY_PROP_STATUS_ORIGINAL, &ret);
 #else
@@ -1277,8 +1277,8 @@ static int read_soc_params_raw(struct qpnp_bms_chip *chip,
 	mutex_unlock(&chip->bms_output_lock);
 
 	if (chip->prev_last_good_ocv_raw == OCV_RAW_UNINITIALIZED) {
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
@@ -1339,8 +1339,8 @@ static int read_soc_params_raw(struct qpnp_bms_chip *chip,
 		pr_debug("EOC Battery full ocv_reading = 0x%x\n",
 				chip->ocv_reading_at_100);
 	} else if (chip->prev_last_good_ocv_raw != raw->last_good_ocv_raw) {
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
@@ -1828,8 +1828,8 @@ static int get_prop_bms_charge_counter(struct qpnp_bms_chip *chip)
 
 	mutex_lock(&chip->bms_output_lock);
 	lock_output_data(chip);
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
@@ -1851,8 +1851,8 @@ static int get_prop_bms_charge_counter_shadow(struct qpnp_bms_chip *chip)
 
 	mutex_lock(&chip->bms_output_lock);
 	lock_output_data(chip);
-	/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-	  *Issue : Battery soc didn't match battery voltage*/
+	/*                                             
+                                                    */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
@@ -3415,9 +3415,9 @@ static int setup_vbat_monitoring(struct qpnp_bms_chip *chip)
 	chip->vbat_monitor_params.low_thr = chip->low_voltage_threshold;
 	chip->vbat_monitor_params.high_thr = chip->max_voltage_uv
 							- VBATT_ERROR_MARGIN;
-#if 0   /*LGE_CHANGES : platfrom 8x26, temporary disabled,
-	in power off charging mode. after eoc it goes to suspend. but this interrupt
-	occured, it couldn't re-enter suspend. before it fixed. this irq disabled*/
+#if 0   /*                                                
+                                                                             
+                                                                          */
 	chip->vbat_monitor_params.state_request = ADC_TM_HIGH_LOW_THR_ENABLE;
 #else
 	chip->vbat_monitor_params.state_request = ADC_TM_HIGH_LOW_THR_DISABLE;
@@ -4884,8 +4884,8 @@ static int bms_find_irqs(struct qpnp_bms_chip *chip,
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
     defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #define SPMI_REQUEST_IRQ(chip, rc, irq_name)				\
 do {									\
 	rc = devm_request_irq(chip->dev, chip->irq_name##_irq.irq,	\
@@ -5138,9 +5138,9 @@ static int refresh_die_temp_monitor(struct qpnp_bms_chip *chip)
 						+ chip->temperature_margin;
 	chip->die_temp_monitor_params.low_temp = result.physical
 						- chip->temperature_margin;
-#if 0   /*LGE_CHANGES : platfrom 8x26, temporary disabled,
-        in power off charging mode. after eoc it goes to suspend. but this interrupt
-        occured, it couldn't re-enter suspend. before it fixed. this irq disabled*/
+#if 0   /*                                                
+                                                                                    
+                                                                                 */
 	chip->die_temp_monitor_params.state_request =
 						ADC_TM_HIGH_LOW_THR_ENABLE;
 #else
@@ -5358,8 +5358,8 @@ static int __devinit qpnp_bms_probe(struct spmi_device *spmi)
 	rc = bms_request_irqs(chip);
 	if (rc) {
 		pr_err("error requesting bms irqs, rc = %d\n", rc);
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \

@@ -13,7 +13,7 @@
 #include "msm_sensor.h"
 #include "msm_cci.h"
 #include "msm_camera_io_util.h"
-#include "../../../../../base/base.h" /* LGE_CHANGE . To read antibanding value. sujeong.kwon@lge.com 2014.04.11*/
+#include "../../../../../base/base.h" /*                                                                        */
 #define MT9M114_SENSOR_NAME "mt9m114"
 #define PLATFORM_DRIVER_NAME "msm_camera_mt9m114"
 #define mt9m114_obj mt9m114_##obj
@@ -45,11 +45,11 @@ typedef enum {
   MT9M114_HZ_MAX_NUM,
 }MT9M114AntibandingType;
 
-static int mt9m114_antibanding = MT9M114_60HZ;  //sujeong.kwon@lge.com 2014-04-02.
+static int mt9m114_antibanding = MT9M114_60HZ;  //                                
 
 
 
-/* LGE_CHANGE_S : To apply for  Manual Flicker: antibanding, 2014-04-11, sujeong.kwon@lge.com */
+/*                                                                                            */
 static ssize_t mt9m114_antibanding_store(struct device* dev, struct device_attribute* attr, const char* buf, size_t n)
 {
        int val =0;
@@ -129,7 +129,7 @@ out_unlink:
 	return rc;
 
 };
-/* LGE_CHANGE_E : To apply for Manual Flicker: antibanding, 2014-04-11, sujeong.kwon@lge.com */
+/*                                                                                           */
 
 static struct msm_sensor_ctrl_t mt9m114_s_ctrl;
 
@@ -140,7 +140,7 @@ static struct msm_sensor_power_setting mt9m114_power_setting[] = {
 		.config_val = GPIO_OUT_HIGH,
 		.delay = 0,
 	},
-/* LGE CHANGE S, Add E7 LTE define, 2014-03-06, sangwoo25.park@lge.com */
+/*                                                                     */
 #if defined(CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 	{
 		.seq_type = SENSOR_GPIO,
@@ -185,7 +185,7 @@ static struct msm_sensor_power_setting mt9m114_power_setting[] = {
 		.delay = 10,
 	},
 #endif
-/* LGE CHANGE E, Add E7 LTE define, 2014-03-06, sangwoo25.park@lge.com */
+/*                                                                     */
 	{
 		.seq_type = SENSOR_CLK,
 		.seq_val = SENSOR_CAM_MCLK,
@@ -239,13 +239,13 @@ static struct msm_camera_i2c_reg_conf mt9m114_720p_settings[] = {
 	{0xC816, 0x0060,},/*fine_correction = 96*/
 	{0xC818, 0x02D3,},/*cpipe_last_row = 723*/
 	{0xC826, 0x0020,},/*reg_0_data = 32*/
-/* LGE CHANGE S, add featuring E9, 2014-03-05, sangwoo25.park@lge.com */
+/*                                                                    */
 #if defined(CONFIG_MACH_MSM8226_E9WIFI) || defined(CONFIG_MACH_MSM8226_E9WIFIN)
 	{0xC834, 0x0000,},/*sensor_control_read_mode = 0*/
 #else
 	{0xC834, 0x0003,},/*sensor_control_read_mode = 0*/
 #endif
-/* LGE CHANGE E, add featuring E9, 2014-03-05, sangwoo25.park@lge.com */
+/*                                                                    */
 	{0xC854, 0x0000,},/*crop_window_xoffset = 0*/
 	{0xC856, 0x0000,},/*crop_window_yoffset = 0*/
 	{0xC858, 0x0500,},/*crop_window_width = 1280*/
@@ -686,7 +686,7 @@ static struct msm_camera_i2c_reg_conf mt9m114_recommend_settings[] = {
 	//[AE]
 // start of test for AE window //2014-04-09
 //[AE weight update 1]
-/* LGE CHANGE S, add featuring E9, 2014-05-03, js.kim@lge.com */
+/*                                                            */
 #if defined(CONFIG_MACH_MSM8226_E9WIFI) || defined(CONFIG_MACH_MSM8226_E9WIFIN)
 	{0x098E, 0x2404,},       // LOGICAL_ADDRESS_ACCESS [AE_RULE_ALGO]
 	{0xA404, 0x0001,},      // AE_RULE_ALGO
@@ -794,7 +794,7 @@ static struct msm_camera_i2c_reg_conf mt9m114_recommend_settings[] = {
 	{0x098E, 0xA41F},     // LOGICAL_ADDRESS_ACCESS [AE_RULE_AE_WEIGHT_TABLE_4_4]
 	{0x0990, 0x0000},
 	#endif
-	/* LGE CHANGE E, add featuring E9, 2014-05-03, js.kim@lge.com */
+	/*                                                            */
 // end of test for AE window //2014-04-09
 	{0x098E, 0xC87A,},	//			===== 8
 	{0x0990, 0x3000,}, 	// CAM_AET_TARGET_AVERAGE_LUMA
@@ -1025,7 +1025,7 @@ static struct msm_camera_i2c_reg_conf mt9m114_recommend_settings[] = {
 	{0xC990, 0x0006,},	//cam_port_mipi_timing_t_lpx = 6
 	{0xC992, 0x0A0C,},	//cam_port_mipi_timing_init_timing = 2572
 
-#if 0  //sujeong.kwon@lge.com. 2014-04-02. seperated to mt9m114_config_change_settings[]
+#if 0  //                                                                               
 	//[Change-Config]
 	{0x098E, 0xDC00,}, 	// LOGICAL_ADDRESS_ACCESS			===== 8
 	{0x0990, 0x2800,},	// AE_TRACK_AE_TRACKING_DAMPENING_SPEED
@@ -1117,13 +1117,13 @@ static int32_t mt9m114_platform_probe(struct platform_device *pdev)
 	const struct of_device_id *match;
 	printk("%s, E.\n", __func__);
 	match = of_match_device(mt9m114_dt_match, &pdev->dev);
-/* LGE_CHANGE_S : WBT, 2013-5-31, jonghwan.ko@lge.com */
+/*                                                    */
 		if(!match)
 		{
 			  pr_err(" %s failed\n",__func__);
 			  return -ENODEV;
 		 }
-/* LGE_CHANGE_E : WBT, 2013-5-31, jonghwan.ko@lge.com */
+/*                                                    */
 	rc = msm_sensor_platform_probe(pdev, match->data);
 	pr_err("mt9m114: mt9m114_platform_probe \n");
 
@@ -1544,7 +1544,7 @@ int32_t mt9m114_sensor_config(struct msm_sensor_ctrl_t *s_ctrl,
 		}
 		break;
 	}
-/*LGE_CHANGE_S, add soc exif, 2013-10-04, kwangsik83.kim@lge.com*/
+/*                                                              */
 	case CFG_PAGE_MODE_READ_I2C_ARRAY:{
 		int16_t size=0;
 		uint16_t read_data_size = 0;
@@ -1637,9 +1637,9 @@ int32_t mt9m114_sensor_config(struct msm_sensor_ctrl_t *s_ctrl,
 
 		break;
 	}
-/*LGE_CHANGE_E, add soc exif, 2013-10-04, kwangsik83.kim@lge.com*/
+/*                                                              */
 
-/*LGE_CHANGE_E, modified power-up/down status for recovery, 2013-12-27, hyungtae.lee@lge.com*/
+/*                                                                                          */
 	case CFG_SET_STOP_STREAM_SETTING: {
 		struct msm_camera_i2c_reg_setting *stop_setting =
 			&s_ctrl->stop_setting;
@@ -1715,7 +1715,7 @@ int32_t mt9m114_sensor_config(struct msm_sensor_ctrl_t *s_ctrl,
 		pr_debug("%s: Cancelling Auto Focus", __func__);
 		break;
 		}
-//LGE_CHANGE_E,  These options has beend added due to colour effect issue. youngwook.song@lge.com 2013-11-25
+//                                                                                                          
 	case CFG_SET_ISO:
 	case CFG_SET_EXPOSURE_COMPENSATION:
 	case CFG_SET_EFFECT:
@@ -1727,7 +1727,7 @@ int32_t mt9m114_sensor_config(struct msm_sensor_ctrl_t *s_ctrl,
 	case CFG_SET_AEC_ROI:
 		pr_debug("%s: We do not support features value related to LOCK now\n", __func__);
 		break;
-//LGE_CHANGE_X,  These options has beend added due to colour effect issue. youngwook.song@lge.com 2013-11-25
+//                                                                                                          
 	case CFG_SET_FRAMERATE_FOR_SOC:
 		break;
 		default:

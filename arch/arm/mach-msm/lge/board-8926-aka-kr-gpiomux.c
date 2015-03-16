@@ -434,7 +434,7 @@ static struct msm_gpiomux_config msm_synaptics_configs_rev_b[] __initdata = {
 //Need to set GPIO[020] NFC_VEN
 //Need to set GPIO[021] NFC_IRQ
 //Need to set GPIO[022] NFC_MODE
-/*  LGE_CHANGE_S, [NFC][garam.kim@lge.com], NFC Bring up*/
+/*                                                      */
 #ifdef CONFIG_LGE_NFC_PN547_C2
 #if 0
 static struct gpiomux_setting nfc_pn547_sda_cfg = {
@@ -516,7 +516,7 @@ static struct msm_gpiomux_config msm_nfc_configs[] __initdata = {
 	},
 };
 #endif
-/*  LGE_CHANGE_E, [NFC][garam.kim@lge.com], NFC Bring up*/
+/*                                                      */
 
 /* LCD pin Setting */
 //Need to set GPIO[024] LCD_VSYNC
@@ -781,14 +781,14 @@ static struct gpiomux_setting sd_card_det_sleep_config = {
 	.pull = GPIOMUX_PULL_NONE,
 	.dir = GPIOMUX_IN,
 };
-#else // not CONFIG_MACH_LGE
+#else //                    
 static struct gpiomux_setting sd_card_det_sleep_config = {
 	.func = GPIOMUX_FUNC_GPIO,
 	.drv = GPIOMUX_DRV_2MA,
 	.pull = GPIOMUX_PULL_UP,
 	.dir = GPIOMUX_IN,
 };
-#endif // CONFIG_MACH_LGE
+#endif //                
 
 static struct msm_gpiomux_config sd_card_det __initdata = {
 	.gpio = 37,
@@ -1083,7 +1083,7 @@ static struct msm_gpiomux_config bt_pcm_configs[] __initdata = {
 		},
 	}
 };
-/* LGE_CHANGE_S, [TDMB][hyun118.shin@lge.com], TDMB Bring Up */
+/*                                                           */
 #if defined(CONFIG_LGE_BROADCAST_TDMB)
 static struct gpiomux_setting gpio_blsp1_spi_active_config = {
 	.func = GPIOMUX_FUNC_1,
@@ -1152,7 +1152,7 @@ static struct msm_gpiomux_config msm8926_tdmb_configs[] __initdata = {
 	},
 };
 #endif
-/* LGE_CHANGE_E, [TDMB][hyun118.shin@lge.com], TDMB Bring Up */
+/*                                                           */
 
 static void bluetooth_msm_gpiomux_install(void)
 {
@@ -1171,8 +1171,8 @@ static void bluetooth_msm_gpiomux_install(void)
     /* PCM I/F */
     msm_gpiomux_install(bt_pcm_configs, ARRAY_SIZE(bt_pcm_configs));
 }
-#endif /* CONFIG_LGE_BLUETOOTH */
-/* LGE_CHANGE_E, BT][teddy.ju@lge.com], 2013-05-13 */
+#endif /*                      */
+/*                                                 */
 
 /* WIFI Pin Setting */
 #if defined (CONFIG_BCMDHD) || defined (CONFIG_BCMDHD_MODULE)
@@ -1555,11 +1555,11 @@ void __init msm8226_init_gpiomux(void)
 	}
 
 	// GPIO related function <<5.NFC>>
-/*  LGE_CHANGE_S, [NFC][garam.kim@lge.com], NFC Bring up */
+/*                                                       */
 #ifdef CONFIG_LGE_NFC_PN547_C2
 	msm_gpiomux_install(msm_nfc_configs, ARRAY_SIZE(msm_nfc_configs));
 #endif
-/*  LGE_CHANGE_E, [NFC][garam.kim@lge.com], NFC Bring up */
+/*                                                       */
 
 	// GPIO related function <<6.LCD>>
 	msm_gpiomux_install_nowrite(msm_lcd_configs, ARRAY_SIZE(msm_lcd_configs));
@@ -1581,7 +1581,7 @@ void __init msm8226_init_gpiomux(void)
 	// GPIO related function <<13.BT>>
 #ifdef CONFIG_LGE_BLUETOOTH
     bluetooth_msm_gpiomux_install();
-#endif /* CONFIG_LGE_BLUETOOTH */
+#endif /*                      */
 
 	// GPIO related function <<14.WIFI>>
 #if defined (CONFIG_BCMDHD) || defined (CONFIG_BCMDHD_MODULE)
@@ -1618,11 +1618,11 @@ void __init msm8226_init_gpiomux(void)
 	// GPIO related function <<22. Auth pullup chip>>
 	msm_gpiomux_install(auth_pullup_configs, ARRAY_SIZE(auth_pullup_configs));
 
-/* LGE_CHANGE_S, [TDMB][hyun118.shin@lge.com], TDMB Bring Up */
+/*                                                           */
 #if defined(CONFIG_LGE_BROADCAST_TDMB)
 	msm_gpiomux_install(msm8926_tdmb_configs, ARRAY_SIZE(msm8926_tdmb_configs));
 #endif
-/* LGE_CHANGE_E, [TDMB][hyun118.shin@lge.com], TDMB Bring Up */
+/*                                                           */
 
 #if defined(CONFIG_KS8851) || defined(CONFIG_KS8851_MODULE)
 	msm_gpiomux_install(msm_eth_configs, ARRAY_SIZE(msm_eth_configs));

@@ -1049,7 +1049,7 @@ static int mxt_read_all_diagnostic_data(struct mxt_data *data, u8 dbg_mode, char
 		goto out;
 	}
 
-	//LGE
+	//   
 	mxt_prepare_debug_data(data);
 
 	end_page = (data->channel_size.size_x * data->channel_size.size_y) / NODE_PER_PAGE + 1;
@@ -1144,7 +1144,7 @@ static int mxt_read_one_page_diagnostic_data(struct mxt_data *data, u8 dbg_mode)
 		goto out;
 	}
 
-	//LGE
+	//   
 	mxt_prepare_debug_data_temp(data);
 
 	/* read the dbg data */

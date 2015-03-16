@@ -1444,7 +1444,7 @@ static int mxt_read_all_diagnostic_data(struct mxt_data *data, u8 dbg_mode, char
 		goto out;
 	}
 
-	//LGE
+	//   
 	mxt_prepare_debug_data(data);
 
 	*len += snprintf(buf + *len, write_page - *len, "\n===============================================");
@@ -1544,7 +1544,7 @@ static int mxt_read_one_page_diagnostic_data(struct mxt_data *data, u8 dbg_mode)
 		goto out;
 	}
 
-	//LGE
+	//   
 	mxt_prepare_debug_data_temp(data);
 
 	/* read the dbg data */

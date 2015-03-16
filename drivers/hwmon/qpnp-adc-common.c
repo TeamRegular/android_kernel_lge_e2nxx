@@ -49,7 +49,7 @@
    their framework which is 0.1DegC. True resolution of 0.1DegC
    will result in the below table size to increase by 10 times */
 
-/* LGE_CHANGE_S; apply battery thermistor adc value for W7 */
+/*                                                         */
 #ifdef CONFIG_LGE_PM_CHARGING_TEMP_SCENARIO
 static const struct qpnp_vadc_map_pt adcmap_btm_threshold_for_rev0[] = {
 	{-300,	1668},
@@ -722,7 +722,7 @@ static const struct qpnp_vadc_map_pt adcmap_btm_threshold[] = {
 	{790,	203}
 };
 #endif
-/* LGE_CHANGE_E */
+/*              */
 
 static const struct qpnp_vadc_map_pt adcmap_qrd_btm_threshold[] = {
 	{-200,	1540},
@@ -1607,8 +1607,8 @@ int32_t qpnp_vadc_check_result(int32_t *data)
 }
 EXPORT_SYMBOL(qpnp_vadc_check_result);
 
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 int qpnp_adc_get_revid_version(struct device *dev)
 {
@@ -1686,8 +1686,8 @@ int qpnp_adc_get_revid_version(struct device *dev)
 		(revid_data->pmic_type == PM8110_V1P0_TYPE) &&
 		(revid_data->pmic_subtype == PM8110_V1P0_SUBTYPE))
 			return QPNP_REV_ID_8110_1_0;
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 	else if ((revid_data->rev1 == PM8110_V2P0_REV1) &&
 		(revid_data->rev2 == PM8110_V2P0_REV2) &&

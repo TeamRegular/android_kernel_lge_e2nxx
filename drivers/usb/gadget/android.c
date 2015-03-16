@@ -1957,7 +1957,7 @@ static int mass_storage_function_init(struct android_usb_function *f,
 	if (!config)
 		return -ENOMEM;
 
-#ifdef CONFIG_USB_G_LGE_ANDROID	/* by mo2chunghan.lee@lge.com, 09/20/2012 */
+#ifdef CONFIG_USB_G_LGE_ANDROID	/*                                        */
 		config->fsg.vendor_name = "LGE";
 		config->fsg.product_name = "Android Platform";
 #endif
@@ -2168,7 +2168,7 @@ static struct android_usb_function cdrom_storage_function = {
 	.bind_config	= cdrom_storage_function_bind_config,
 	.attributes	= cdrom_storage_function_attributes,
 };
-#endif /* CONFIG_USB_G_LGE_ANDROID_AUTORUN */
+#endif /*                                  */
 
 #ifdef CONFIG_USB_G_LGE_ANDROID
 /* charge only mode */
@@ -2193,7 +2193,7 @@ static struct android_usb_function charge_only_function = {
    .cleanup    = charge_only_function_cleanup,
    .bind_config    = charge_only_function_bind_config,
 };
-#endif /* CONFIG_USB_G_LGE_ANDROID */
+#endif /*                          */
 
 static int accessory_function_init(struct android_usb_function *f,
 					struct usb_composite_dev *cdev)
@@ -3120,7 +3120,7 @@ static void android_lge_factory_bind(struct usb_composite_dev *cdev)
 #endif
 }
 
-#endif /* CONFIG_USB_G_LGE_ANDROID && CONFIG_LGE_PM */
+#endif /*                                           */
 
 static int android_bind_config(struct usb_configuration *c)
 {
@@ -3192,7 +3192,7 @@ static int android_bind(struct usb_composite_dev *cdev)
 
 	/* Default strings - should be updated by userspace */
 #ifdef CONFIG_USB_G_LGE_ANDROID
-	/* Default string as LGE products */
+	/*                                */
 	ret = lgeusb_get_manufacturer_name(lge_manufacturer);
 	if (!ret)
 		strlcpy(manufacturer_string, lge_manufacturer,

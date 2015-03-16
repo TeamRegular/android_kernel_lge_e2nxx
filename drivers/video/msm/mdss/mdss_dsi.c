@@ -38,6 +38,7 @@ extern int is_dsv_cont_splash_screening_f;
 #if defined(CONFIG_LGE_LCD_DSV_CTRL)
 int dsv_control_enable = 0;
 #endif
+int dual_panel;
 #endif
 
 static int mdss_dsi_regulator_init(struct platform_device *pdev)
@@ -91,7 +92,7 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata, int enable)
 		}
 
 #if defined(CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL)
-		if (!has_dsv_f && pdata->panel_info.panel_power_on == 0)//LGE Change
+		if (!has_dsv_f && pdata->panel_info.panel_power_on == 0)//
 			mdss_dsi_panel_reset(pdata, 1);
 #else
 		if(pdata->panel_info.panel_power_on ==0) //qct original
@@ -123,7 +124,7 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata, int enable)
 	} else {
 
 #if defined(CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL)
-		if (!has_dsv_f)  //LGE Change
+		if (!has_dsv_f)  //
 			mdss_dsi_panel_reset(pdata, 0);
 #else
 		mdss_dsi_panel_reset(pdata, 0); //qct original
@@ -1525,6 +1526,14 @@ int dsi_panel_device_register(struct device_node *pan_node,
 			return -ENODEV;
 		}
 	}
+
+	dual_panel = of_property_read_bool(pan_node,
+			"lge,dual-panel");
+
+	if(dual_panel)
+		pr_info("[mdss] dual panel is detected\n");
+	else
+		pr_info("[mdss] original panel is detected\n");
 #endif
 
 	if (pinfo->type == MIPI_CMD_PANEL) {

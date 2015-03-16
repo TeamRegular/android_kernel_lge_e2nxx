@@ -22,9 +22,9 @@
 #include <linux/module.h>
 #include <mach/board_lge.h>
 
-/* LGE_CHANGE_S
-* change code for LCD KCAL
-* 2013-05-08, seojin.lee@lge.com
+/*             
+                          
+                                
 */
 
 static struct pre_selfd_platform_data *pre_selfd_pdata;

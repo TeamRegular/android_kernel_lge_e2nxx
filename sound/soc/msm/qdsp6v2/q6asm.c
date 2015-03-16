@@ -1862,7 +1862,7 @@ static int __q6asm_open_write(struct audio_client *ac, uint32_t format,
 	if (!rc) {
 		pr_err("%s: timeout. waited for open write rc[%d]\n", __func__,
 			rc);
-        panic("__q6asm_open_write panic. Contact WX-BSP-Audio@lge.com"); //LGE_UPDATE temporarily panic code for debugging
+        panic("__q6asm_open_write panic. Contact WX-BSP-Audio@lge.com"); //                                               
 		goto fail_cmd;
 	}
 	ac->io_mode |= TUN_WRITE_IO_MODE;
@@ -4508,7 +4508,7 @@ int q6asm_set_lgesoundmabl_lrbalancecontrol(struct audio_client *ac, int lrbalan
 fail_cmd:
 	return rc;
 }
-#endif //CONFIG_SND_LGE_MABL
+#endif //                   
 
 int q6asm_read(struct audio_client *ac)
 {

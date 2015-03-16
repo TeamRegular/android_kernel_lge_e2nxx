@@ -250,7 +250,7 @@ static ssize_t android_irrc_write(struct file *file, const char __user *buf, siz
 
 #ifdef CONFIG_LGE_SW_IRRC_MUTE_SPEAKER
 extern void mute_spk_for_swirrc (int enable);
-#endif //CONFIG_LGE_SW_IRRC_MUTE_SPEAKER
+#endif //                               
 
 static long android_irrc_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
@@ -266,7 +266,7 @@ static long android_irrc_ioctl(struct file *file, unsigned int cmd, unsigned lon
 		android_irrc_enable_pwm(irrc, test.frequency/1000, test.duty);
 #ifdef CONFIG_LGE_SW_IRRC_MUTE_SPEAKER
 		mute_spk_for_swirrc (1);
-#endif //CONFIG_LGE_SW_IRRC_MUTE_SPEAKER
+#endif //                               
 		break;
 
 	case IRRC_STOP:
@@ -275,7 +275,7 @@ static long android_irrc_ioctl(struct file *file, unsigned int cmd, unsigned lon
 		queue_delayed_work(irrc->workqueue, &irrc->gpio_off_work, msecs_to_jiffies(1500));
 #ifdef CONFIG_LGE_SW_IRRC_MUTE_SPEAKER
 		mute_spk_for_swirrc (0);
-#endif //CONFIG_LGE_SW_IRRC_MUTE_SPEAKER
+#endif //                               
 		break;
 	default:
 	    INFO_MSG("CMD ERROR: cmd:%d\n", cmd);
@@ -305,7 +305,7 @@ struct miscdevice irrc_misc = {
 	.fops	= &IRRC_pcm_fops,
 };
 
-#ifdef CONFIG_DEBUG_FS //2013-07-08 beekay.lee@lge.com
+#ifdef CONFIG_DEBUG_FS //                             
 static struct dentry *debugfs_wcd9xxx_dent;
 static struct dentry *debugfs_poke;
 

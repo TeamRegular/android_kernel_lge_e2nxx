@@ -65,7 +65,7 @@
 #define SPMI_OWNERSHIP_TABLE_REG(N)	(0x0700 + (4 * (N)))
 #define SPMI_OWNERSHIP_PERIPH2OWNER(X)	((X) & 0x7)
 
-/* Add LGE for SPMI Error Debugging */
+/*                                  */
 #define SPMI_ERR_CAUSE_DEBUG	1
 
 /* Channel Status fields */

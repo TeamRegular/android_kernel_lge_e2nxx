@@ -300,5 +300,5 @@ ssize_t mit_rawdata_show(struct i2c_client *client,char *buf);
 ssize_t mit_openshort_show(struct i2c_client *client, char *buf);
 int mit_isc_page_read(struct mms_data *ts, u8 *rdata, int addr);
 int mit_isc_exit(struct mms_data *ts);
-#endif // LGE_TS_MELFAS_H
+#endif //                
 

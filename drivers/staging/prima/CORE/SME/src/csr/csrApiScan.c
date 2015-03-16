@@ -153,7 +153,7 @@ typedef struct sCsrIgnoreChannels
         { {'U','G'}, { 165}, 1},
         { {'J','O'}, { 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140}, 15}
         };
-    #else  //CUSTOMER_LGE
+    #else  //            
     static tCsrIgnoreChannels countryIgnoreList[MAX_COUNTRY_IGNORE] = {
         { {'U','A'}, { 136, 140}, 2},
         { {'T','W'}, { 36, 40, 44, 48, 52}, 5},
@@ -161,7 +161,7 @@ typedef struct sCsrIgnoreChannels
         { {'A','U'}, { 120, 124, 128}, 3 },
         { {'A','R'}, { 120, 124, 128}, 3 }
         };
-    #endif //CUSTOMER_LGE
+    #endif //            
 
 #else
 static tCsrIgnoreChannels countryIgnoreList[MAX_COUNTRY_IGNORE] = { };

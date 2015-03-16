@@ -32,9 +32,9 @@
 #define SCM_EBUSY		-55
 #define SCM_EBUSY_WAIT_MS	30
 #ifdef CONFIG_MACH_LGE
-/* LGE_CHANGE
- * QCT recommand MAX_RETRY 20->200
- * 2014-0333-26 yongkyu.lee@lge.com
+/*           
+                                  
+                                   
  */
 #define SCM_EBUSY_MAX_RETRY	200
 #else

@@ -26,7 +26,7 @@
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)
 #endif
 
-// [LGE_UPDATE] [yt.jeon@lge.com] [2014-01-06] use cmdline info (lge.camera)
+//                                                                          
 char *lge_camera_info = NULL;
 
 DEFINE_MSM_MUTEX(msm_eeprom_mutex);
@@ -222,7 +222,7 @@ int32_t read_eeprom_memory(struct msm_eeprom_ctrl_t *e_ctrl)
 			}
 			memptr += emap[j].mem.valid_size;
 
-// [LGE_UPDATE_S] [hyungtae.lee@lge.com] [2013-05-24] EEPROM ( of Y412B ) bring-up
+//                                                                                
 			/*
 			 *We need to change slave address for read data (Y412B)
 			 *I2C addr : 0x50, 0x51, 0x52, 0x53
@@ -248,7 +248,7 @@ int32_t read_eeprom_memory(struct msm_eeprom_ctrl_t *e_ctrl)
 					#endif
 				#endif
 			#endif
-// [LGE_UPDATE_E] [hyungtae.lee@lge.com] [2013-05-24] EEPROM ( of Y412B ) bring-up
+//                                                                                
 		}
 		if (emap[j].pageen.valid_size) {
 			e_ctrl->i2c_client.addr_type = emap[j].pageen.addr_t;
@@ -432,9 +432,9 @@ static struct msm_cam_clk_info cam_8960_clk_info[] = {
 };
 
 static struct msm_cam_clk_info cam_8974_clk_info[] = {
-// [LGE_UPDATE_S] [hyungtae.lee@lge.com] [2013-05-24] EEPROM ( of Y412B ) bring-up
+//                                                                                
 	[SENSOR_CAM_MCLK] = {"cam_src_clk", 24000000},
-// [LGE_UPDATE_E] [hyungtae.lee@lge.com] [2013-05-24] EEPROM ( of Y412B ) bring-up
+//                                                                                
 	[SENSOR_CAM_CLK] = {"cam_clk", 0},
 };
 
@@ -446,7 +446,7 @@ static struct v4l2_subdev_ops msm_eeprom_subdev_ops = {
 	.core = &msm_eeprom_subdev_core_ops,
 };
 
-// [LGE_UPDATE_S] [hyungtae.lee@lge.com] [2013-05-24] EEPROM ( of Y412B ) bring-up
+//                                                                                
 static int msm_eeprom_check_CRC(struct msm_eeprom_ctrl_t *e_ctrl)
 {
 	int CRC_code, CRC_sum, counter;
@@ -489,9 +489,9 @@ static int msm_eeprom_check_CRC(struct msm_eeprom_ctrl_t *e_ctrl)
 
 	return 0;
 }
-// [LGE_UPDATE_E] [hyungtae.lee@lge.com] [2013-05-24] EEPROM ( of Y412B ) bring-up
+//                                                                                
 
-//LGE_CHANGE_S, HI544 EEPROM CHECKSUM, jongkwon.chae@lge.com, 2014-07-07
+//                                                                      
 static uint32_t msm_eeprom_checksum(struct msm_eeprom_ctrl_t *e_ctrl)
 {
 	int CheckSum = 0;
@@ -625,9 +625,9 @@ static uint32_t msm_eeprom_checksum(struct msm_eeprom_ctrl_t *e_ctrl)
     CDBG("<< %s END (rc_supported: 0x%X) @Line:%d\n", __func__, rc_supported, __LINE__);
 	return rc_supported;
 }
-//LGE_CHANGE_E, HI544 EEPROM CHECKSUM, jongkwon.chae@lge.com, 2014-07-07
+//                                                                      
 
-// [LGE_UPDATE_S] [yt.jeon@lge.com] [2014-01-06] use cmdline info (lge.camera)
+//                                                                            
 static int __init camera_information_setup(char *cam_info)
 {
         lge_camera_info = cam_info;
@@ -635,7 +635,7 @@ static int __init camera_information_setup(char *cam_info)
         return 1;
 }
 __setup("lge.camera=", camera_information_setup);
-// [LGE_UPDATE_E] [yt.jeon@lge.com] [2014-01-06] use cmdline info (lge.camera)
+//                                                                            
 
 int32_t msm_eeprom_i2c_probe(struct i2c_client *client,
 	const struct i2c_device_id *id) {
@@ -680,7 +680,7 @@ int32_t msm_eeprom_i2c_probe(struct i2c_client *client,
 	}
 
 	power_info = &e_ctrl->eboard_info->power_info;
-	e_ctrl->eboard_info->i2c_slaveaddr = temp<<1; //LGE_UPDATE makes 8bit for i2c driver 2013-11-26 yt.jeon@lge.com
+	e_ctrl->eboard_info->i2c_slaveaddr = temp<<1; //                                                               
 	e_ctrl->i2c_client.client = client;
 	e_ctrl->is_supported = 0;
 
@@ -727,7 +727,7 @@ int32_t msm_eeprom_i2c_probe(struct i2c_client *client,
 	for (j = 0; j < e_ctrl->num_bytes; j++)
 		CDBG("memory_data[%d] = 0x%X\n", j, e_ctrl->memory_data[j]);
 
-	// [LGE_UPDATE_S] [hyungtae.lee@lge.com] [2013-05-24] EEPROM ( of Y412B ) bring-up
+	//                                                                                
 #if defined(CONFIG_MACH_MSM8X10_W5_GLOBAL_COM) || defined(CONFIG_MACH_MSM8X10_W5N_GLOBAL_COM) || defined(CONFIG_MACH_MSM8X10_W5DS_GLOBAL_COM)
 	if(lge_camera_info){
 		if(!strncmp(lge_camera_info, "imx111", 6)){
@@ -749,7 +749,7 @@ int32_t msm_eeprom_i2c_probe(struct i2c_client *client,
 		}
 	#endif
 #endif
-	// [LGE_UPDATE_E] [hyungtae.lee@lge.com] [2013-05-24] EEPROM ( of Y412B ) bring-up
+	//                                                                                
 
 	rc = msm_camera_power_down(power_info, e_ctrl->eeprom_device_type,
 		&e_ctrl->i2c_client);
@@ -1168,7 +1168,7 @@ static int32_t msm_eeprom_platform_probe(struct platform_device *pdev)
 	for (j = 0; j < e_ctrl->num_bytes; j++)
 		CDBG("memory_data[%d] = 0x%X\n", j, e_ctrl->memory_data[j]);
 
-	// [LGE_UPDATE_S] [hyungtae.lee@lge.com] [2013-05-24] EEPROM ( of Y412B ) bring-up
+	//                                                                                
        if(!strncmp(eb_info->eeprom_name, "imx111", 6))
        {
 		rc = msm_eeprom_check_CRC(e_ctrl);
@@ -1177,17 +1177,17 @@ static int32_t msm_eeprom_platform_probe(struct platform_device *pdev)
 			goto memdata_free;
 		}
        }
-	// [LGE_UPDATE_E] [hyungtae.lee@lge.com] [2013-05-24] EEPROM ( of Y412B ) bring-up
+	//                                                                                
 
 
-	//LGE_CHANGE_S, HI544 EEPROM CHECKSUM, jongkwon.chae@lge.com, 2014-07-07
+	//                                                                      
     if(!strncmp(eb_info->eeprom_name, "hi544", 5))
     {
 		CDBG("[CHECK] [BEFORE] e_ctrl->is_supported: 0x%X", e_ctrl->is_supported);
 		e_ctrl->is_supported |= msm_eeprom_checksum(e_ctrl);
 		CDBG("[CHECK] [AFTER]  e_ctrl->is_supported: 0x%X", e_ctrl->is_supported);
     }
-	//LGE_CHANGE_E, HI544 EEPROM CHECKSUM, jongkwon.chae@lge.com, 2014-07-07
+	//                                                                      
 
 	rc = msm_camera_power_down(power_info, e_ctrl->eeprom_device_type,
 		&e_ctrl->i2c_client);
@@ -1208,7 +1208,7 @@ static int32_t msm_eeprom_platform_probe(struct platform_device *pdev)
 	e_ctrl->msm_sd.sd.entity.group_id = MSM_CAMERA_SUBDEV_EEPROM;
 	msm_sd_register(&e_ctrl->msm_sd);
 
-	//LGE_CHANGE_S, HI544 EEPROM CHECKSUM, jongkwon.chae@lge.com, 2014-07-07
+	//                                                                      
     if(!strncmp(eb_info->eeprom_name, "hi544", 5))
     {
 		e_ctrl->is_supported = (e_ctrl->is_supported << 1) | 1;
@@ -1217,7 +1217,7 @@ static int32_t msm_eeprom_platform_probe(struct platform_device *pdev)
     else {
     	e_ctrl->is_supported = 1;
     }
-	//LGE_CHANGE_E, HI544 EEPROM CHECKSUM, jongkwon.chae@lge.com, 2014-07-07
+	//                                                                      
 
 	CDBG("%s X\n", __func__);
 	return rc;

@@ -512,8 +512,8 @@ static int32_t qpnp_vadc_version_check(struct qpnp_vadc_chip *dev)
 #define QPNP_VBAT_COEFF_13	102640000
 #define QPNP_VBAT_COEFF_14	22220000
 #define QPNP_VBAT_COEFF_15	83060000
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE)|| defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 #define QPNP_VBAT_COEFF_16	2810
 #define QPNP_VBAT_COEFF_17	5260
@@ -553,8 +553,8 @@ static int32_t qpnp_ocv_comp(int64_t *result,
 {
 	int64_t temp_var = 0;
 	int64_t old = *result;
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 	int version;
 	version = qpnp_adc_get_revid_version(vadc->dev);
@@ -564,8 +564,8 @@ static int32_t qpnp_ocv_comp(int64_t *result,
 #endif
 	if (version == -EINVAL)
 		return 0;
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 	if (version == QPNP_REV_ID_8110_2_0) {
 		if (die_temp < -20000)
@@ -584,8 +584,8 @@ static int32_t qpnp_ocv_comp(int64_t *result,
 		die_temp = 60000;
 #endif
 	switch (version) {
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 	case QPNP_REV_ID_8941_3_1:
 #else
@@ -605,8 +605,8 @@ static int32_t qpnp_ocv_comp(int64_t *result,
 			break;
 		}
 		break;
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 	case QPNP_REV_ID_8026_1_0:
 #else
@@ -626,8 +626,8 @@ static int32_t qpnp_ocv_comp(int64_t *result,
 			break;
 		}
 		break;
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 	case QPNP_REV_ID_8026_2_0:
 	case QPNP_REV_ID_8026_2_1:
@@ -654,8 +654,8 @@ static int32_t qpnp_ocv_comp(int64_t *result,
 			break;
 		}
 		break;
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 	case QPNP_REV_ID_8110_2_0:
 		switch (vadc->id) {
@@ -704,8 +704,8 @@ static int32_t qpnp_vbat_sns_comp(int64_t *result,
 {
 	int64_t temp_var = 0;
 	int64_t old = *result;
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 	int version;
 	version = qpnp_adc_get_revid_version(vadc->dev);
@@ -715,8 +715,8 @@ static int32_t qpnp_vbat_sns_comp(int64_t *result,
 #endif
 	if (version == -EINVAL)
 		return 0;
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 		if (version == QPNP_REV_ID_8110_2_0) {
 			if (die_temp < -20000)
@@ -737,8 +737,8 @@ static int32_t qpnp_vbat_sns_comp(int64_t *result,
 		die_temp = 60000;
 #endif
 	switch (version) {
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 	case QPNP_REV_ID_8941_3_1:
 #else
@@ -757,8 +757,8 @@ static int32_t qpnp_vbat_sns_comp(int64_t *result,
 			break;
 		}
 		break;
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 	case QPNP_REV_ID_8026_1_0:
 #else
@@ -778,8 +778,8 @@ static int32_t qpnp_vbat_sns_comp(int64_t *result,
 			break;
 		}
 		break;
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 	case QPNP_REV_ID_8026_2_0:
 	case QPNP_REV_ID_8026_2_1:
@@ -806,8 +806,8 @@ static int32_t qpnp_vbat_sns_comp(int64_t *result,
 			break;
 		}
 		break;
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 	case QPNP_REV_ID_8110_2_0:
 		switch (vadc->id) {
@@ -846,8 +846,8 @@ static int32_t qpnp_vbat_sns_comp(int64_t *result,
 }
 
 int32_t qpnp_vbat_sns_comp_result(struct qpnp_vadc_chip *vadc,
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 						int64_t *result, bool is_pon_ocv)
 #else
@@ -867,8 +867,8 @@ int32_t qpnp_vbat_sns_comp_result(struct qpnp_vadc_chip *vadc,
 		pr_err("Error reading die_temp\n");
 		return rc;
 	}
-/*Qualcomm patch -BMS tuning eunho.yang@lge.com
-  *Issue : Battery soc didn't match battery voltage*/
+/*                                             
+                                                   */
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8226_E9WIFI) || defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || defined (CONFIG_MACH_MSM8926_E7LTE_VZW_US) || defined (CONFIG_MACH_MSM8926_E7LTE_USC_US)
 	if (is_pon_ocv)
 		rc = qpnp_ocv_comp(result, vadc, die_temp_result.physical);

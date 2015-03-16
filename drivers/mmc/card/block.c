@@ -1498,10 +1498,10 @@ static int mmc_blk_issue_sanitize_rq(struct mmc_queue *mq,
 	err = mmc_switch_ignore_timeout(card, EXT_CSD_CMD_SET_NORMAL,
 					EXT_CSD_SANITIZE_START, 1,
 					MMC_SANITIZE_REQ_TIMEOUT);
-/* LGE_CHANGE_S 
- * Date   : 17/JUN/2014
- * Author : bohyun.jung, D3-5T-FS@lge.com
- * Change : send HPI to stop sanitize in case of timeout.
+/*              
+                       
+                                         
+                                                         
  */
 #if defined (CONFIG_LGE_MMC_SEND_HPI_SANITIZE_TIMEOUT)
 	if (err == -ETIMEDOUT) {
@@ -1543,10 +1543,10 @@ static int mmc_blk_issue_flush(struct mmc_queue *mq, struct request *req)
 
 	ret = mmc_flush_cache(card);
 	if (ret == -ETIMEDOUT) {
-	/* LGE_CHANGE_S 
-	 * Author : bohyun.jung@lge.com
-	 * Change : eMMC can recover itself, but if it fails during re-init/flush, recover routine does not activated. (eMMC is not accessible)
-	 * 			try emmc_reset and panic if it continously fails.
+	/*              
+                                
+                                                                                                                                        
+                                                        
   */
 #if defined (CONFIG_LGE_MMC_RESET_IF_HANG)
 		if ((card->host->caps & MMC_CAP_NONREMOVABLE) && timeout_count > 3)		// Only for eMMC (NONREMOVABLE)
@@ -1566,7 +1566,7 @@ static int mmc_blk_issue_flush(struct mmc_queue *mq, struct request *req)
 			}
 		}
 		timeout_count++;
-#endif /* CONFIG_LGE_MMC_RESET_IF_HANG */
+#endif /*                              */
 		pr_debug("%s:%s: requeue flush request after timeout\n", mmc_hostname(card->host), __func__);
 		spin_lock_irq(q->queue_lock);
 		blk_requeue_request(q, req);
@@ -2259,10 +2259,10 @@ static u8 mmc_blk_prep_packed_list(struct mmc_queue *mq, struct request *req)
 	if (max_packed_rw == 0)
 		goto no_packed;
 
-/* LGE_UPDATE_S by p1-fs@lge.com Toshiba recommend packed number no over 8 */
+/*                                                                         */
 	else if(max_packed_rw > 8)
 		max_packed_rw = 8;
-/* LGE_UPDATE_E by p1-fs@lge.com */
+/*                               */
 
 	if (mmc_req_rel_wr(cur) &&
 			(md->flags & MMC_BLK_REL_WR) &&
@@ -2816,10 +2816,10 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *rqc)
 #endif
 }
 
-/* LGE_CHANGE_S 
- * Author : bohyun.jung@lge.com
- * Change : eMMC can recover itself, but if it fails during re-init/flush, recover routine does not activated. (eMMC is not accessible)
- * 			try emmc_reset and panic if it continously fails.
+/*              
+                               
+                                                                                                                                       
+                                                       
  */
 #if defined (CONFIG_LGE_MMC_RESET_IF_HANG)
 static int mmc_blk_reset_if_hang(struct mmc_queue *mq, struct mmc_card *card)
@@ -2847,7 +2847,7 @@ static int mmc_blk_reset_if_hang(struct mmc_queue *mq, struct mmc_card *card)
 
 	return 0;
 }
-#endif /* CONFIG_LGE_MMC_RESET_IF_HANG */
+#endif /*                              */
 
 static int mmc_blk_issue_rq(struct mmc_queue *mq, struct request *req)
 {

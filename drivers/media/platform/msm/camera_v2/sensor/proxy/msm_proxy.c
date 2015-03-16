@@ -10,10 +10,10 @@
  * GNU General Public License for more details.
  */
 /*
-	Last updated : 2014/05/06, by sungmin.woo@lge.com, seonyoung.kim@lge.com
-	change description : fix wrap around problem, 03/18
-				       cover non-proxy sensor case, abnormal camera close by kill qcamera-daemon 04/12
-				       non-calibration module error, increased max-convergence time 05/06
+                                                                         
+                                                    
+                                                                                          
+                                                                             
 */
 
 #define pr_fmt(fmt) "%s:%d " fmt, __func__, __LINE__
@@ -207,7 +207,7 @@ int32_t proxy_i2c_e2p_write(uint16_t addr, uint16_t data, enum msm_camera_i2c_da
            struct msm_camera_i2c_client *proxy_i2c_client = NULL;
            proxy_i2c_client = &msm_proxy_t.i2c_client;
 #if defined(CONFIG_MACH_MSM8926_JAGNM_GLOBAL_COM)
-	proxy_i2c_client->cci_client->sid = msm_proxy_t.sid_e2p >> 1; /* LGE_CHANGE, set the proper eeprom slave address from the sensor id, 2014-07-08, jungryoul.choi@lge.com */
+	proxy_i2c_client->cci_client->sid = msm_proxy_t.sid_e2p >> 1; /*                                                                                                        */
 	ret = proxy_i2c_client->i2c_func_tbl->i2c_write(proxy_i2c_client, addr, data, data_type);
 	if(ret < 0)
 		pr_err("proxy_i2c_e2p_write() fail !!! ret = %d\n", ret);
@@ -226,7 +226,7 @@ int32_t proxy_i2c_e2p_read(uint16_t addr, uint16_t *data, enum msm_camera_i2c_da
 	proxy_i2c_client = &msm_proxy_t.i2c_client;
 
 #if defined(CONFIG_MACH_MSM8926_JAGNM_GLOBAL_COM)
-	proxy_i2c_client->cci_client->sid = msm_proxy_t.sid_e2p >> 1; /* LGE_CHANGE, set the proper eeprom slave address from the sensor id, 2014-07-08, jungryoul.choi@lge.com */
+	proxy_i2c_client->cci_client->sid = msm_proxy_t.sid_e2p >> 1; /*                                                                                                        */
 	ret = proxy_i2c_client->i2c_func_tbl->i2c_read(proxy_i2c_client, addr, data, data_type);
 	if(ret < 0)
 		pr_err("proxy_i2c_e2p_read() fail !!! ret = %d\n", ret);
@@ -798,7 +798,7 @@ static int32_t msm_proxy_platform_probe(struct platform_device *pdev)
 	msm_proxy_t.proxy_cal = 0;
 	msm_proxy_t.proxy_stat.cal_done = 0;
 #if defined(CONFIG_MACH_MSM8926_JAGNM_GLOBAL_COM)
-	msm_proxy_t.sid_e2p = 0xA0; /* LGE_CHANGE, set the proper eeprom slave address from the sensor id, 2014-07-08, jungryoul.choi@lge.com */
+	msm_proxy_t.sid_e2p = 0xA0; /*                                                                                                        */
 #endif
 
 	CDBG("Exit\n");
@@ -887,7 +887,7 @@ int msm_init_proxy(void)
 #endif
 
 #if defined(CONFIG_MACH_MSM8926_JAGNM_GLOBAL_COM)
-/* LGE_CHANGE_S, set the proper eeprom slave address from the sensor id, 2014-07-08, jungryoul.choi@lge.com */
+/*                                                                                                          */
 	int32_t ret = 0;
 	uint16_t sensor_chipid = 0;
 	struct msm_camera_i2c_client *proxy_i2c_client = NULL;
@@ -905,7 +905,7 @@ int msm_init_proxy(void)
 		msm_proxy_t.sid_e2p = 0xA0;
 	else if(sensor_chipid == 0x0091) // imx091
 		msm_proxy_t.sid_e2p = 0xA6;
-/* LGE_CHANGE_E, set the proper eeprom slave address from the sensor id, 2014-07-08, jungryoul.choi@lge.com */
+/*                                                                                                          */
 #endif
 
 	pr_err("msm_init_proxy ENTER!\n");

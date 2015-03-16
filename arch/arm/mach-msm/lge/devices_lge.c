@@ -493,7 +493,7 @@ bool is_lge_battery_valid(void)
 	return false;
 
 
-#endif //CONFIG_LGE_PM_BATTERY_4_2VOLT
+#endif //                             
 }
 //EXPORT_SYMBOL(is_lge_battery_valid);
 
@@ -783,7 +783,7 @@ void __init lge_android_usb_init(void)
 {
     platform_device_register(&lge_android_usb_device);
 }
-#endif /* CONFIG_USB_G_LGE_ANDROID */
+#endif /*                          */
 
 #ifdef CONFIG_LGE_CRASH_FOOTPRINT
 static unsigned long int lge_bootreason = 0;
@@ -849,7 +849,7 @@ void __init lge_add_qsdl_device(void)
 {
 	platform_device_register(&lge_qsdl_device);
 }
-#endif /* CONFIG_LGE_QSDL_SUPPORT */
+#endif /*                         */
 
 #if defined(CONFIG_LGE_KSWITCH)
  static int atoi(const char *name)

@@ -453,7 +453,7 @@ struct vfe_device {
 	uint8_t vt_enable;
 	void __iomem *p_avtimer_msw;
 	void __iomem *p_avtimer_lsw;
-	uint8_t ignore_error;	/*QMC_PATCH, Fix false error detecting, 2014-02-27, jinw.kim@lge.com*/
+	uint8_t ignore_error;	/*                                                                  */
 };
 
 #endif

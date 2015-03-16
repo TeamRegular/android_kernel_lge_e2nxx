@@ -107,7 +107,7 @@ static struct wcd9xxx_mbhc_config mbhc_cfg = {
 	.do_recalibration = false,
 	.use_vddio_meas = false,
 };
-#if defined(CONFIG_MACH_LGE) && defined(CONFIG_SWITCH_MAX1462X) //LGE_UPDATE 20130626 beekay.lee@lge.com WX_MAXIM
+#if defined(CONFIG_MACH_LGE) && defined(CONFIG_SWITCH_MAX1462X) //                                               
 extern bool maxim_enabled;
 #endif
 
@@ -628,7 +628,7 @@ static void *def_msm8x10_wcd_mbhc_cal(void)
         btn_high[6] = 269;
         btn_low[7] = 270;
         btn_high[7] = 500;
-#else	/* Calibrated Button range by LGE */
+#else	/*                                */
 	btn_low[0] = -50;
 	btn_high[0] = 150;	/* Hook Key */
 	btn_low[1] = 151;
@@ -1126,7 +1126,7 @@ static __devinit int msm8x10_asoc_machine_probe(struct platform_device *pdev)
 			ret);
 		goto err1;
 	}
-#if defined(CONFIG_MACH_LGE) && defined(CONFIG_SWITCH_MAX1462X) //LGE_UPDATE 20130626 beekay.lee@lge.com WX_MAXIM
+#if defined(CONFIG_MACH_LGE) && defined(CONFIG_SWITCH_MAX1462X) //                                               
 	if(maxim_enabled) {
 		mbhc_cfg.insert_detect = false;
 		pr_info("%s: mbhc disable\n", __func__);

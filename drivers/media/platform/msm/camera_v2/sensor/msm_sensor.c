@@ -22,12 +22,12 @@
 
 /*#define CONFIG_MSMB_CAMERA_DEBUG*/
 
-/* LGE_FEATURE_APLUS */
-/* LGE_CHANGE_S, For laser sensor, 2014-02-24, sungmin.woo@lge.com */
+/*                   */
+/*                                                                 */
 #if defined(CONFIG_LG_PROXY)
 #include "msm_proxy.h"
 #endif
-/* LGE_CHANGE_E, For laser sensor, 2014-02-24, sungmin.woo@lge.com */
+/*                                                                 */
 #undef CDBG
 #ifdef CONFIG_MSMB_CAMERA_DEBUG
 #define CDBG(fmt, args...) pr_err(fmt, ##args)
@@ -267,13 +267,13 @@ static int32_t msm_sensor_get_dt_vreg_data(struct device_node *of_node,
 	struct msm_camera_sensor_board_info *sensordata)
 {
 	int32_t rc = 0, i = 0;
-	int32_t count = 0;  /* LGE_CHANGE, HI543 bring up, 2013-08-07, hyungtae.lee@lge.com */
+	int32_t count = 0;  /*                                                              */
 	uint32_t *vreg_array = NULL;
 
 	count = of_property_count_strings(of_node, "qcom,cam-vreg-name");
 	CDBG("%s qcom,cam-vreg-name count %d\n", __func__, count);
 
-/* LGE_CHANGE_S, HI543 bring up, 2013-08-07, hyungtae.lee@lge.com */
+/*                                                                */
 	#if 0 // QCT original
 	if (!count)
 		return 0;
@@ -281,7 +281,7 @@ static int32_t msm_sensor_get_dt_vreg_data(struct device_node *of_node,
 	if (count <= 0)
 		return 0;
 	#endif
-/* LGE_CHANGE_E, HI543 bring up, 2013-08-07, hyungtae.lee@lge.com */
+/*                                                                */
 
 	sensordata->cam_vreg = kzalloc(sizeof(struct camera_vreg_t) * count,
 		GFP_KERNEL);
@@ -670,7 +670,7 @@ int32_t msm_sensor_init_gpio_pin_tbl(struct device_node *of_node,
 		goto ERROR;
 	}
 
-/* LGE_CHANGE_S, add gpio setting for ldaf-en, 2014-04-07, jungryoul.choi@lge.com */
+/*                                                                                */
 	rc = of_property_read_u32(of_node, "qcom,gpio-ldaf-en", &val);
 	if (!rc) {
 		if (val >= gpio_array_size) {
@@ -687,7 +687,7 @@ int32_t msm_sensor_init_gpio_pin_tbl(struct device_node *of_node,
 			__func__, __LINE__, rc);
 		goto ERROR;
 	}
-/* LGE_CHANGE_E, add gpio setting for ldaf-en, 2014-04-07, jungryoul.choi@lge.com */
+/*                                                                                */
 
 	return 0;
 
@@ -787,7 +787,7 @@ static int32_t msm_sensor_get_dt_data(struct device_node *of_node,
 		goto ERROR1;
 	}
 	
-/* LGE_CHANGE_S, Fix for Dual Camera Module of HI707, 2014-03-04, dongsu.bag@lge.com */
+/*                                                                                   */
 	rc = of_property_read_u32(of_node, "qcom,maker-gpio",
 		&sensordata->sensor_init_params->maker_gpio);
 	CDBG("%s qcom,maker-gpio %d, rc %d\n", __func__,
@@ -797,9 +797,9 @@ static int32_t msm_sensor_get_dt_data(struct device_node *of_node,
 		sensordata->sensor_init_params->maker_gpio = -1;
 		rc = 0;
 	}
-/* LGE_CHANGE_E, Fix for Dual Camera Module of HI707, 2014-03-04, dongsu.bag@lge.com */
+/*                                                                                   */
 
-/* LGE_CHANGE_S, Fixes to add product_kor info capabilities for setting Hi707 of kor medel, 2014-03-11, dongsu.bag@lge.com */
+/*                                                                                                                         */
 		rc = of_property_read_u32(of_node, "qcom,product-kor",
 			&sensordata->sensor_init_params->product_kor);
 		pr_err("%s qcom,product-kor %d, rc %d\n", __func__,
@@ -808,7 +808,7 @@ static int32_t msm_sensor_get_dt_data(struct device_node *of_node,
 			sensordata->sensor_init_params->product_kor = -1;
 			rc = 0;
 		}
-/* LGE_CHANGE_E, Fixes to add product_kor info capabilities for setting Hi707 of kor medel, 2014-03-11, dongsu.bag@lge.com */
+/*                                                                                                                         */
 
 	rc = of_property_read_u32(of_node, "qcom,mount-angle",
 		&sensordata->sensor_init_params->sensor_mount_angle);
@@ -1145,10 +1145,10 @@ int32_t msm_sensor_power_up(struct msm_sensor_ctrl_t *s_ctrl)
 		}
 	}
 
-	/*LGE_CHANGE_S, mipi end packet issue, 2013-10-15, kwangsik83.kim@lge.com*/
+	/*                                                                       */
 	if(strncmp(s_ctrl->sensordata->sensor_name, "hi707", strlen("hi707")) == 0)
 		s_ctrl->isFirstStream = TRUE;
-	/*LGE_CHANGE_E, mipi end packet issue, 2013-10-15, kwangsik83.kim@lge.com*/
+	/*                                                                       */
 
 	CDBG("%s exit\n", __func__);
 	return 0;
@@ -1276,10 +1276,10 @@ int32_t msm_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 		data->gpio_conf->cam_gpio_req_tbl,
 		data->gpio_conf->cam_gpio_req_tbl_size, 0);
 
-	/*LGE_CHANGE_S, mipi end packet issue, 2013-10-15, kwangsik83.kim@lge.com*/
+	/*                                                                       */
 	if(strncmp(s_ctrl->sensordata->sensor_name, "hi707", strlen("hi707")) == 0)
 		s_ctrl->isFirstStream = FALSE;
-	/*LGE_CHANGE_E, mipi end packet issue, 2013-10-15, kwangsik83.kim@lge.com*/
+	/*                                                                       */
 
 	pr_err("%s exit\n", __func__);
 	return 0;
@@ -1520,7 +1520,7 @@ int32_t msm_sensor_config(struct msm_sensor_ctrl_t *s_ctrl,
 		break;
 	}
 
-	/*LGE_CHANGE,  add bank register for imx219, 2014-02-19, younjung.park@lge.com*/
+	/*                                                                            */
 	case CFG_READ_I2C_ARRAY_LG:{
 		struct msm_camera_i2c_reg_setting reg_setting;
 		uint16_t local_data = 0;
@@ -1553,7 +1553,7 @@ int32_t msm_sensor_config(struct msm_sensor_ctrl_t *s_ctrl,
 			}
 			break;
 	}
-	/*LGE_CHANGE,  add bank register for imx219, 2014-02-19, younjung.park@lge.com*/
+	/*                                                                            */
 	case CFG_SLAVE_READ_I2C: {
 		struct msm_camera_i2c_read_config read_config;
 		uint16_t local_data = 0;
@@ -1822,8 +1822,8 @@ int32_t msm_sensor_config(struct msm_sensor_ctrl_t *s_ctrl,
 		}
 		break;
 	}
-/* LGE_FEATURE_APLUS */
-/* LGE_CHANGE_S, For laser sensor, 2014-02-24, sungmin.woo@lge.com */
+/*                   */
+/*                                                                 */
 #if defined(CONFIG_LG_PROXY)
 	case CFG_PROXY_ON:{
 		rc = msm_init_proxy();
@@ -1874,7 +1874,7 @@ int32_t msm_sensor_config(struct msm_sensor_ctrl_t *s_ctrl,
 		break;
 
 #endif
-/* LGE_CHANGE_E, For laser sensor, 2014-02-24, sungmin.woo@lge.com */
+/*                                                                 */
 
 	default:
 		rc = -EFAULT;
@@ -1940,7 +1940,7 @@ static struct msm_camera_i2c_fn_t msm_sensor_cci_func_tbl = {
 	.i2c_read = msm_camera_cci_i2c_read,
 	.i2c_read_seq = msm_camera_cci_i2c_read_seq,
 	.i2c_write = msm_camera_cci_i2c_write,
-	.i2c_write_seq = msm_camera_cci_i2c_write_seq,  // [ADD] Connect to function.sujeong.kwon@lge.com 2014-03-01.
+	.i2c_write_seq = msm_camera_cci_i2c_write_seq,  //                                                           
 	.i2c_write_table = msm_camera_cci_i2c_write_table,
 	.i2c_write_seq_table = msm_camera_cci_i2c_write_seq_table,
 	.i2c_write_table_w_microdelay =
