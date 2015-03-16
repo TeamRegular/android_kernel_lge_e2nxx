@@ -9,3 +9,4 @@ diagchar-objs := diagchar_core.o diagchar_hdlc.o diagfwd.o diagmem.o diagfwd_cnt
 obj-y += lg_dm_dev_tty.o
 obj-y += lg_dm_tty.o
 obj-$(CONFIG_LGE_ACG_CARRIER_CODE) += diag_acg.o
+obj-$(CONFIG_LGE_DIAG_BYPASS) += lg_diag_bypass.o
