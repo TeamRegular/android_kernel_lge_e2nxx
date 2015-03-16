@@ -544,7 +544,7 @@ static int msm_isp_send_hw_cmd(struct vfe_device *vfe_dev,
 			reg_cfg_cmd->u.mask_info.reg_offset);
 		break;
 	}
-/*                                                                                                                       */
+/* LGE_CHANGE_S, jaehan.jeong, 2013.11.8, Applied QCT patch CN#01252253 - page fault in case of 64BIT_DMI, [STARTS HERE] */
 #if 0 //QCT Original
 	case VFE_WRITE_DMI_16BIT:
 	case VFE_WRITE_DMI_32BIT:
@@ -659,7 +659,7 @@ static int msm_isp_send_hw_cmd(struct vfe_device *vfe_dev,
 		break;
 	}
 #endif
-/*                                                                                                                      */
+/* LGE_CHANGE_E, jaehan.jeong, 2013.11.8, Applied QCT patch CN#01252253 - page fault in case of 64BIT_DMI,  [ENDS HERE] */
 	case VFE_READ_DMI_16BIT:
 	case VFE_READ_DMI_32BIT:
 	case VFE_READ_DMI_64BIT: {
@@ -1063,7 +1063,7 @@ irqreturn_t msm_isp_process_irq(int irq_num, void *data)
 	error_mask1 &= irq_status1;
 	irq_status0 &= ~error_mask0;
 	irq_status1 &= ~error_mask1;
-	if (!vfe_dev->ignore_error &&	/*                                                                  */
+	if (!vfe_dev->ignore_error &&	/*QMC_PATCH, Fix false error detecting, 2014-02-27, jinw.kim@lge.com*/
 		((error_mask0 != 0) || (error_mask1 != 0)))
 		msm_isp_update_error_info(vfe_dev, error_mask0, error_mask1);
 

@@ -143,7 +143,7 @@ enum msm_i2c_state {
 #define QUP_OUT_FIFO_NOT_EMPTY		0x10
 #define I2C_GPIOS_DT_CNT		(2)		/* sda and scl */
 
-//                                                   
+// LGE Added. Atmel touch IC for checking i2c suspend
 bool i2c_suspended = false;
 #if defined(CONFIG_TOUCHSCREEN_ATMEL_S540)
 bool atmel_touch_i2c_suspended = false;        /* Use atme touch IC for checking i2c suspend */
@@ -1805,7 +1805,7 @@ static int i2c_qup_pm_suspend_sys(struct device *device)
 
 		i2c_suspended = true;
 #if defined(CONFIG_TOUCHSCREEN_ATMEL_S540)
-        //                                                   
+        // LGE Added. Atmel touch IC for checking i2c suspend
 		if (!strncmp(dev_name(device), "f9927000.i2c", 12)){
 			atmel_touch_i2c_suspended = true;
 			dev_info(device, "lge_touch I2C Suspend!\n");
@@ -1839,7 +1839,7 @@ static int i2c_qup_pm_resume_sys(struct device *device)
 	if(lge_get_board_revno() <  HW_REV_B) {
 			dev_info(device, "X3_KR / G2M_KR revA/A2!!");
 	} else {
-		//                                                                
+		// LGE added. To avoid i2c fail in i2c suspend status. QCT 1387439
 		if (pm_runtime_suspended(device)) {
 			dev_info(device, "i2c is runtime suspended status !!! try to runtime resume !!!\n");
 		}
@@ -1856,7 +1856,7 @@ static int i2c_qup_pm_resume_sys(struct device *device)
 		}
 	}
 #else
-	//                                                                
+	// LGE added. To avoid i2c fail in i2c suspend status. QCT 1387439
 	if (pm_runtime_suspended(device)) {
 		dev_info(device, "i2c is runtime suspended status !!! try to runtime resume !!!\n");
 	}
@@ -1875,7 +1875,7 @@ static int i2c_qup_pm_resume_sys(struct device *device)
 	i2c_suspended = false;
 
 #if defined(CONFIG_TOUCHSCREEN_ATMEL_S540)
-	//                                                   
+	// LGE Added. Atmel touch IC for checking i2c suspend
 	if (!strncmp(dev_name(device), "f9927000.i2c", 12)){
 		atmel_touch_i2c_suspended = false;
 		dev_info(device, "lge_touch I2C Resume!\n");

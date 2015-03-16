@@ -173,13 +173,13 @@ static int32_t hi544_platform_probe(struct platform_device *pdev)
 	int32_t rc = 0;
 	const struct of_device_id *match;
 	match = of_match_device(hi544_dt_match, &pdev->dev);
-/*                                                    */
+/* LGE_CHANGE_S : WBT, 2013-5-31, jonghwan.ko@lge.com */
 	if(!match)
 	{
 		  pr_err(" %s failed ",__func__);
 		  return -ENODEV;
 	 }
-/*                                                    */
+/* LGE_CHANGE_E : WBT, 2013-5-31, jonghwan.ko@lge.com */
 	rc = msm_sensor_platform_probe(pdev, match->data);
 	return rc;
 }
@@ -250,10 +250,10 @@ static void __exit hi544_exit_module(void)
 
 static struct msm_sensor_ctrl_t hi544_s_ctrl = {
 	.sensor_i2c_client = &hi544_sensor_i2c_client,
-	//                                                                                              
+	//LGE_CHANGE_S, jongkwon.chae, 2014.06.20, To separate power settings depending on HW revisions.
 	//.power_setting_array.power_setting = hi544_power_setting,
 	//.power_setting_array.size = ARRAY_SIZE(hi544_power_setting),
-	//                                                                                              
+	//LGE_CHANGE_E, jongkwon.chae, 2014.06.20, To separate power settings depending on HW revisions.
 	.msm_sensor_mutex = &hi544_mut,
 	.sensor_v4l2_subdev_info = hi544_subdev_info,
 	.sensor_v4l2_subdev_info_size = ARRAY_SIZE(hi544_subdev_info),

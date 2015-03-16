@@ -1349,7 +1349,7 @@ static int __devinit qpnp_pon_probe(struct spmi_device *spmi)
 		return rc;
 	}
 
-/*                                                                         */
+/* LGE_CHANGE_S [jiwon.seo@lge.com] 20140102 : Change SMPL Enable Position */
 #if defined(CONFIG_ARCH_MSM8610) //W3,W5 model
  /* Enable SMPL */ 
    { 
@@ -1358,7 +1358,7 @@ static int __devinit qpnp_pon_probe(struct spmi_device *spmi)
     qpnp_pon_trigger_config(PON_SMPL,1); 
    } 
 #endif
-/*                                                                         */
+/* LGE_CHANGE_E [jiwon.seo@lge.com] 20140102 : Change SMPL Enable Position */
 	return rc;
 }
 

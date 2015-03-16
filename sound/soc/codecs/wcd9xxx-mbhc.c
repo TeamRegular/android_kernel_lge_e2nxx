@@ -40,11 +40,11 @@
 #include "wcd9xxx-mbhc.h"
 #include "wcd9xxx-resmgr.h"
 #include "wcd9xxx-common.h"
-//                
+//LGE CHANGE START
 #include <linux/wakelock.h>
 
 static struct wake_lock ear_hook_wake_lock;
-//              
+//LGE CHANGE END
 
 #define WCD9XXX_JACK_MASK (SND_JACK_HEADSET | SND_JACK_OC_HPHL | \
 			   SND_JACK_OC_HPHR | SND_JACK_LINEOUT | \
@@ -70,7 +70,7 @@ static struct wake_lock ear_hook_wake_lock;
 
 #if 0 //QCT ORG code 
 #define HS_DETECT_PLUG_TIME_MS (5 * 1000)
-#else //                                                
+#else // hj74.kim@lge.com : decrease device polling time
 #define HS_DETECT_PLUG_TIME_MS (3 * 1000)
 #endif
 
@@ -79,7 +79,7 @@ static struct wake_lock ear_hook_wake_lock;
 
 #if 0 //QCT ORG code 
 #define SWCH_IRQ_DEBOUNCE_TIME_US 5000
-#else //                                          
+#else // hj74.kim@lge.com : increase debounce time
 #define SWCH_IRQ_DEBOUNCE_TIME_US 300000
 #endif
 
@@ -140,10 +140,10 @@ static struct wake_lock ear_hook_wake_lock;
 /* RX_HPH_CNP_WG_TIME increases by 0.24ms */
 #define WCD9XXX_WG_TIME_FACTOR_US	240
 
-//                                                                       
+//#ifdef CONFIG_MACH_LGE // hj74.kim : change value for HTC Innovation HS
 //#define WCD9XXX_V_CS_HS_MAX 650
 //#else
-//                                                                                                                  
+//LGE_CHANGE_S, 14-08-14, sungbo0.jung@lge.com, change range for recognize Ford, UVO2 car-kit (Vdce value = 800~850)
 #if defined(CONFIG_MACH_MSM8926_VFP_KR)
 #define WCD9XXX_V_CS_HS_MAX 750
 #elif defined(CONFIG_LGE_AUDIO_AUX)
@@ -151,10 +151,10 @@ static struct wake_lock ear_hook_wake_lock;
 #else
 #define WCD9XXX_V_CS_HS_MAX 500
 #endif
-//                                                                                                                  
+//LGE_CHANGE_E, 14-08-14, sungbo0.jung@lge.com, change range for recognize Ford, UVO2 car-kit (Vdce value = 800~850)
 //#endif
 
-#ifdef CONFIG_MACH_LGE //                                                          
+#ifdef CONFIG_MACH_LGE // LGE CHANGED : change value for 3pole headset detect issue
 #define WCD9XXX_V_CS_NO_MIC 10
 #else
 #define WCD9XXX_V_CS_NO_MIC 5
@@ -175,7 +175,7 @@ MODULE_PARM_DESC(impedance_detect_en, "enable/disable impedance detect");
 
 static bool detect_use_vddio_switch;
 
-#if defined(CONFIG_MACH_LGE) && defined(CONFIG_SWITCH_MAX1462X) //                                               
+#if defined(CONFIG_MACH_LGE) && defined(CONFIG_SWITCH_MAX1462X) //LGE_UPDATE 20130626 beekay.lee@lge.com WX_MAXIM
 extern bool maxim_enabled;
 #endif
 
@@ -680,13 +680,13 @@ static void wcd9xxx_jack_report(struct wcd9xxx_mbhc *mbhc,
 						status & SND_JACK_HEADPHONE);
 	}
 
-	//                                                                                 
+	// LGE CHANGE START , 2014-01-21 : wrong headset detection issue - work around code
 	if((switch_get_state(&mbhc->sdev)==LGE_HEADSET_NO_MIC) && (mask == WCD9XXX_JACK_MASK)&& (status == SND_JACK_HEADSET) )
 	{
 		printk("[LGE MBHC]: wcd9xxx_jack_report , 3pole remove event status = 0 mask = 0x%x\n", mask);	
 		snd_soc_jack_report_no_dapm(jack, 0, mask);
 	}
-	//               
+	// LGE CHANGE END
 
 #if defined(CONFIG_MACH_LGE) && defined(CONFIG_SWITCH_MAX1462X) // hj74.kim : add switch dev
 			if( maxim_enabled == false )
@@ -932,7 +932,7 @@ static void wcd9xxx_insert_detect_setup(struct wcd9xxx_mbhc *mbhc, bool ins)
 	snd_soc_update_bits(mbhc->codec, WCD9XXX_A_MBHC_INSERT_DETECT, 1, 0);
 
 	// sound-bsp, 2013-11-19, hj74.kim : add debugging log
-	//                                                                        
+	//printk("[LGE MBHC] %d[NO=0,NC=1]\n", mbhc->mbhc_cfg->gpio_level_insert);
 	
 	if (mbhc->mbhc_cfg->gpio_level_insert)
 		snd_soc_write(mbhc->codec, WCD9XXX_A_MBHC_INSERT_DETECT,
@@ -1613,7 +1613,7 @@ wcd9xxx_cs_find_plug_type(struct wcd9xxx_mbhc *mbhc,
 	}
 
 	type = dt->_type;
-//                                                                                                                              
+//LGE_UPDATE  hyeonsang85.park@lge.com(AudioBSP) 2014_3_20 bias always on(do not polling) for Iphone5 earjack (TD184584) - start
 #ifdef CONFIG_MACH_MSM8X10_W6
 	printk("hyeonsang85.park : vdce : %d\n", vdce);
 	if ((dt->_type == PLUG_TYPE_HEADSET) && ((63 < vdce) && (vdce < 93))) {
@@ -1622,21 +1622,21 @@ wcd9xxx_cs_find_plug_type(struct wcd9xxx_mbhc *mbhc,
 					printk("hyeonsang85.park : Iphone5 earjack Bias Always on\n");
 	}
 #endif
-//                                                                                                                            
+//LGE_UPDATE  hyeonsang85.park@lge.com(AudioBSP) 2014_3_20 bias always on(do not polling) for Iphone5 earjack (TD184584) - end
 
-//                                                                                                                                 
+//LGE_CHANGE_S, 14-08-14, sungbo0.jung@lge.com, below code is work-around code for UVO2 car-kit ( for canceling mic polling noise )
 /*
+#if defined(CONFIG_LGE_AUDIO_AUX)
                                  
-
-                                            
-                                                                                                                
-                                                                                            
-                                 
-                                                                
-  
-      
+	printk("sungbo0.jung : vdce : %d\n", vdce);
+	if ((dt->_type == PLUG_TYPE_HEADSET) && ( ((800 < vdce) && (vdce < 850)) || ((500 < vdce) && (vdce < 600))) ) {
+				if (mbhc->mbhc_cfg->micbias_enable_flags & (1 << MBHC_MICBIAS_ENABLE_THRESHOLD_HEADSET))
+					mbhc->micbias_enable = true;
+					printk("sungbo0.jung : 4pole AUX-cable, Bias Always on\n");
+	}
+#endif
 */
-//                                                                                                                                 
+//LGE_CHANGE_E, 14-08-14, sungbo0.jung@lge.com, upper code is work-around code for UVO2 car-kit ( for canceling mic polling noise )
 
 	if (dmicbias) {
 		if (dmicbias->_type == PLUG_TYPE_HEADSET &&
@@ -3236,9 +3236,9 @@ static void wcd9xxx_mech_plug_detect_irq_work(struct work_struct *work)
 
 	pr_debug("%s:\n", __func__);
 
-//                
+//LGE CHANGE START
 	wake_lock_timeout(&ear_hook_wake_lock, 4 * HZ);
-//              
+//LGE CHANGE END
 	if (unlikely(wcd9xxx_lock_sleep(mbhc->resmgr->core_res) == false)) {
 		pr_warn("%s: failed to hold suspend\n", __func__);
 	} else {
@@ -3258,9 +3258,9 @@ static irqreturn_t wcd9xxx_mech_plug_detect_irq(int irq, void *data)
 #if defined(CONFIG_LGE_MBHC_FAST_IRQ_HANDLER)
 	schedule_work(&mbhc->mbhc_mech_plug_detect_irq_work);
 #else //original code
-//                
+//LGE CHANGE START
 	wake_lock_timeout(&ear_hook_wake_lock, 4 * HZ);	
-//               
+//LGE CHANGE END	
 	if (unlikely(wcd9xxx_lock_sleep(mbhc->resmgr->core_res) == false)) {
 		pr_warn("%s: failed to hold suspend\n", __func__);
 		r = IRQ_NONE;
@@ -3572,9 +3572,9 @@ irqreturn_t wcd9xxx_dce_handler(int irq, void *data)
 
 	// sound-bsp, 2013-11-19, hj74.kim : add debugging log
 	printk("[LGE MBHC]: wcd9xxx_dce_handler enter\n");
-//                
+//LGE CHANGE START
 	wake_lock_timeout(&ear_hook_wake_lock, 4 * HZ);	
-//               
+//LGE CHANGE END	
 	WCD9XXX_BCL_LOCK(mbhc->resmgr);
 	/* QCT case 01448950 polling noise fix [2014/02/28] */
 	mutex_lock(&mbhc->mbhc_lock);
@@ -3805,7 +3805,7 @@ static irqreturn_t wcd9xxx_release_handler(int irq, void *data)
 							 &mbhc->button_jack,
 							 mbhc->buttons_pressed,
 							 mbhc->buttons_pressed);
-#ifdef CONFIG_MACH_LGE //                            
+#ifdef CONFIG_MACH_LGE //2014.01.06  hj74.kim@lge.com
 					msleep(10);
 #endif					
 					pr_debug("%s: Reporting btn release\n",
@@ -4991,10 +4991,10 @@ int wcd9xxx_mbhc_init(struct wcd9xxx_mbhc *mbhc, struct wcd9xxx_resmgr *resmgr,
 	mbhc->intr_ids = mbhc_cdc_intr_ids;
 	mbhc->impedance_detect = impedance_det_en;
 
-//                
+//LGE CHANGE START
  	printk("%s : wake_lock_init", __func__);
 	wake_lock_init(&ear_hook_wake_lock, WAKE_LOCK_SUSPEND, "ear_hook");
-//              
+//LGE CHANGE END
 	if (mbhc->intr_ids == NULL) {
 		pr_err("%s: Interrupt mapping not provided\n", __func__);
 		return -EINVAL;
@@ -5025,7 +5025,7 @@ int wcd9xxx_mbhc_init(struct wcd9xxx_mbhc *mbhc, struct wcd9xxx_resmgr *resmgr,
 			return ret;
 		}
 
-#ifdef CONFIG_MACH_LGE //                 
+#ifdef CONFIG_MACH_LGE // hj74.kim@lge.com
 		ret = snd_jack_set_key(mbhc->button_jack.jack,
 				       SND_JACK_BTN_7,
 				       KEY_VOLUMEDOWN);
@@ -5093,7 +5093,7 @@ int wcd9xxx_mbhc_init(struct wcd9xxx_mbhc *mbhc, struct wcd9xxx_resmgr *resmgr,
 		impedance_detect_en = impedance_det_en ? 1 : 0;
 
 	core_res = mbhc->resmgr->core_res;
-#if defined(CONFIG_MACH_LGE) && defined(CONFIG_SWITCH_MAX1462X) //                                               
+#if defined(CONFIG_MACH_LGE) && defined(CONFIG_SWITCH_MAX1462X) //LGE_UPDATE 20130626 beekay.lee@lge.com WX_MAXIM
 if( maxim_enabled )
 	goto skip;
 #endif
@@ -5133,7 +5133,7 @@ if( maxim_enabled )
 			mbhc->intr_ids->button_release);
 		goto err_release_irq;
 	}
-#if defined(CONFIG_MACH_LGE) && defined(CONFIG_SWITCH_MAX1462X) //                                               
+#if defined(CONFIG_MACH_LGE) && defined(CONFIG_SWITCH_MAX1462X) //LGE_UPDATE 20130626 beekay.lee@lge.com WX_MAXIM
 	skip :
 #endif
 	ret = wcd9xxx_request_irq(core_res, mbhc->intr_ids->hph_left_ocp,
@@ -5205,10 +5205,10 @@ void wcd9xxx_mbhc_deinit(struct wcd9xxx_mbhc *mbhc)
 
 	wcd9xxx_resmgr_unregister_notifier(mbhc->resmgr, &mbhc->nblock);
 	wcd9xxx_cleanup_debugfs(mbhc);
-//                
+//LGE CHANGE START
 	printk("%s: wake_lock_destroy" , __func__ );
 	wake_lock_destroy(&ear_hook_wake_lock);
-//              
+//LGE CHANGE END
 }
 EXPORT_SYMBOL(wcd9xxx_mbhc_deinit);
 

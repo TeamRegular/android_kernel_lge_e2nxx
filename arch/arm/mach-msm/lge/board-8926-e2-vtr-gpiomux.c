@@ -468,7 +468,7 @@ static struct msm_gpiomux_config msm_touch_configs[] __initdata = {
 //Need to set GPIO[020] NFC_VEN
 //Need to set GPIO[021] NFC_IRQ
 //Need to set GPIO[022] NFC_MODE
-/*                                                        */
+/*  LGE_CHANGE_S, [NFC][minwoo.kwon@lge.com], NFC Bring up*/
 #ifdef CONFIG_LGE_NFC_PN544_C3
 #if 0
 static struct gpiomux_setting nfc_pn544_sda_cfg = {
@@ -550,7 +550,7 @@ static struct msm_gpiomux_config msm_nfc_configs[] __initdata = {
 	},
 };
 #endif
-/*                                                        */
+/*  LGE_CHANGE_E, [NFC][minwoo.kwon@lge.com], NFC Bring up*/
 
 
 /* Camera Pin Setting */
@@ -754,14 +754,14 @@ static struct gpiomux_setting sd_card_det_sleep_config = {
 	.pull = GPIOMUX_PULL_NONE,
 	.dir = GPIOMUX_IN,
 };
-#else //                    
+#else // not CONFIG_MACH_LGE
 static struct gpiomux_setting sd_card_det_sleep_config = {
 	.func = GPIOMUX_FUNC_GPIO,
 	.drv = GPIOMUX_DRV_2MA,
 	.pull = GPIOMUX_PULL_UP,
 	.dir = GPIOMUX_IN,
 };
-#endif //                
+#endif // CONFIG_MACH_LGE
 
 static struct msm_gpiomux_config sd_card_det __initdata = {
 	.gpio = 37,
@@ -1132,8 +1132,8 @@ static void bluetooth_msm_gpiomux_install(void)
     /* PCM I/F */
     msm_gpiomux_install(bt_pcm_configs, ARRAY_SIZE(bt_pcm_configs));
 }
-#endif /*                      */
-/*                                                 */
+#endif /* CONFIG_LGE_BLUETOOTH */
+/* LGE_CHANGE_E, BT][teddy.ju@lge.com], 2013-05-13 */
 
 /* WIFI Pin Setting */
 static struct gpiomux_setting wcnss_5wire_suspend_cfg = {
@@ -1455,11 +1455,11 @@ void __init msm8226_init_gpiomux(void)
 	msm_gpiomux_install(msm_touch_configs, ARRAY_SIZE(msm_touch_configs));
 
 	// GPIO related function <<5.NFC>>
-/*                                                         */
+/*  LGE_CHANGE_S, [NFC][minwoo.kwon@lge.com], NFC Bring up */
 #ifdef CONFIG_LGE_NFC_PN544_C3
 	msm_gpiomux_install(msm_nfc_configs, ARRAY_SIZE(msm_nfc_configs));
 #endif
-/*                                                         */
+/*  LGE_CHANGE_E, [NFC][minwoo.kwon@lge.com], NFC Bring up */
 
 	// GPIO related function <<6.LCD>>
 	msm_gpiomux_install_nowrite(msm_lcd_configs,
@@ -1482,7 +1482,7 @@ void __init msm8226_init_gpiomux(void)
 	// GPIO related function <<13.BT>>
 #ifdef CONFIG_LGE_BLUETOOTH
     bluetooth_msm_gpiomux_install();
-#endif /*                      */
+#endif /* CONFIG_LGE_BLUETOOTH */
 
 	// GPIO related function <<14.WIFI>>
 	msm_gpiomux_install(wcnss_5wire_interface,

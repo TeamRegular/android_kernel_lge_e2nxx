@@ -47,7 +47,7 @@
 #include <mach/board_lge.h>
 #endif
 
-/*                                          */
+/* LGE_CHANGE_S: Cable Detect & Current Set */
 #ifdef  CONFIG_LGE_PM
 #include "../../arch/arm/mach-msm/smd_private.h"
 #include <mach/board_lge.h>
@@ -64,13 +64,13 @@
 #ifdef CONFIG_MAX17048_FUELGAUGE
 #include <linux/max17048_battery.h>
 #endif
-/*              */
+/* LGE_CHANGE_E */
 
-/*              */
+/* LGE_CHANGE_S */
 #ifdef CONFIG_LGE_PM_CHARGING_EXTERNAL_OVP
 #include <linux/of_gpio.h>
 #endif
-/*              */
+/* LGE_CHANGE_E */
 
 #ifdef CONFIG_LGE_PM_PWR_KEY_FOR_CHG_LOGO
 #include <linux/input.h>
@@ -554,12 +554,12 @@ struct qpnp_chg_chip {
 	struct work_struct		reduce_power_stage_work;
 	bool				power_stage_workaround_running;
 	bool				power_stage_workaround_enable;
-/*              */
+/* LGE_CHANGE_S */
 #ifdef CONFIG_LGE_PM_CHARGING_EXTERNAL_OVP
         int ext_ovp_gpio;
 		int ext_ovp_slow_chg_trim;
 #endif
-/*              */
+/* LGE_CHANGE_E */
 #ifdef CONFIG_LGE_PM_4_25V_CHARGING_START
         bool    from_temp_monitor_vbat_det_high;
 		struct work_struct	resume_check_work;
@@ -644,8 +644,8 @@ static int qpnp_chg_ibatmax_set(struct qpnp_chg_chip *chip, int chg_current);
 static int
 get_prop_battery_voltage_now(struct qpnp_chg_chip *chip);
 #endif
-/*                                          */
-/*                                                                      */
+/* LGE_CHANGE_S: Cable Detect & Current Set */
+/* BEGIN : janghyun.baek@lge.com 2013-01-25 For factory cable detection */
 #ifdef CONFIG_LGE_PM_USB_ID
 static unsigned int cable_type;
 static bool is_factory_cable(void)
@@ -666,8 +666,8 @@ static bool is_factory_cable(void)
 
 extern void lge_pm_set_usb_id_handle(struct qpnp_vadc_chip *);
 #endif
-/*                                        */
-/*              */
+/* END : janghyun.baek@lge.com 2013-01-25 */
+/* LGE_CHANGE_E */
 
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR)
@@ -696,7 +696,7 @@ static bool is_56k_910k_factory_cable(void)
 }
 #endif
 
-/*              */
+/* LGE_CHANGE_S */
 #ifdef CONFIG_LGE_PM_CHARGING_EXTERNAL_OVP
 enum
 {
@@ -717,7 +717,7 @@ static void lge_pm_set_ext_ovp(int ext_ovp_gpio, bool on)
 		gpio_set_value(ext_ovp_gpio, on);
 }
 #endif
-/*              */
+/* LGE_CHANGE_E */
 
 #ifdef CONFIG_LGE_PM_4_25V_CHARGING_START
 static void
@@ -929,7 +929,7 @@ qpnp_chg_is_boost_en_set(struct qpnp_chg_chip *chip)
 	return (boost_en_ctl & BOOST_PWR_EN) ? 1 : 0;
 }
 
-/*                            */
+/* LGE not useed BTM feature  */
 #ifndef CONFIG_LGE_PM
 static int
 qpnp_chg_is_batt_temp_ok(struct qpnp_chg_chip *chip)
@@ -1636,7 +1636,7 @@ qpnp_arb_stop_work(struct work_struct *work)
 			wake_unlock(&chip->weak_chg_wake_lock);
 		}
 	}
-#endif //                                                       
+#endif //CONFIG_LGE_PM_WORKAROUND_WEAK_CHARGER_REMOVAL_DETECTION
 
 #if defined (CONFIG_MACH_MSM8926_JAGC_SPR) || defined (CONFIG_MACH_MSM8926_JAGNM_ATT)
 	if (qpnp_chg_is_usb_chg_plugged_in(chip) || qpnp_chg_is_dc_chg_plugged_in(chip))
@@ -1760,7 +1760,7 @@ qpnp_chg_usb_chg_gone_irq_handler(int irq, void *_chip)
 #endif
 
 	pr_debug("chg_gone triggered\n");
-/*              */
+/* LGE_CHANGE_S */
 #ifdef CONFIG_LGE_PM_CHARGING_EXTERNAL_OVP
     lge_set_chg_path_to_internal();
 #endif
@@ -1776,7 +1776,7 @@ qpnp_chg_usb_chg_gone_irq_handler(int irq, void *_chip)
 #ifdef CONFIG_LGE_PM_VZW_FAST_CHG
 	chip->is_vzw_slow_charging = false;
 #endif
-/*              */
+/* LGE_CHANGE_E */
 	if ((qpnp_chg_is_usb_chg_plugged_in(chip)
 			|| qpnp_chg_is_dc_chg_plugged_in(chip))
 			&& (usb_sts & CHG_GONE_IRQ)) {
@@ -2394,7 +2394,7 @@ qpnp_chg_usb_usbin_valid_irq_handler(int irq, void *_chip)
 #define TEST_EN_SMBC_LOOP		0xE5
 #define IBAT_REGULATION_DISABLE		BIT(2)
 
-/*                            */
+/* LGE not useed BTM feature  */
 #ifndef CONFIG_LGE_PM
 static irqreturn_t
 qpnp_chg_bat_if_batt_temp_irq_handler(int irq, void *_chip)
@@ -3479,7 +3479,7 @@ get_prop_full_design(struct qpnp_chg_chip *chip)
 	if (chip->bms_psy)
 	{
 		use_fuelgauge = chip->bms_psy->use_external_fuelgauge;
-		//                                                                 
+		//pr_err("[LGE] use_external_fuelgauge is %d !!!\n",use_fuelgauge);
 	}
 	else
 	{
@@ -3529,7 +3529,7 @@ get_prop_charge_full(struct qpnp_chg_chip *chip)
 	if (chip->bms_psy)
 	{
 		use_fuelgauge = chip->bms_psy->use_external_fuelgauge;
-		//                                                                 
+		//pr_err("[LGE] use_external_fuelgauge is %d !!!\n",use_fuelgauge);
 	}
 	else
 	{
@@ -3647,7 +3647,7 @@ get_prop_capacity(struct qpnp_chg_chip *chip)
 		 * from shutting down unecessarily */
 		return DEFAULT_CAPACITY;
 	}
-	//                                                     
+	//printk("[LGE] battery capacity is %d...\n",capacity);
 	return capacity;
 #else
 	pr_err("NOT INIT max17048, Cannot get capacity.\n");
@@ -4049,7 +4049,7 @@ qpnp_batt_external_power_changed(struct power_supply *psy)
 			  POWER_SUPPLY_PROP_ONLINE, &ret);
 
 
-/*                                                                                       */
+/* BEGIN : janghyun.baek@lge.com 2013-01-25 Draw max current when factory cable inserted */
 #ifdef CONFIG_LGE_PM
 	if(is_factory_cable()){
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
@@ -4070,7 +4070,7 @@ qpnp_batt_external_power_changed(struct power_supply *psy)
 		return;
 	}
 #endif
-/*                                        */
+/* END : janghyun.baek@lge.com 2013-01-25 */
 #ifdef CONFIG_LGE_PM_FACTORY_PSEUDO_BATTERY
 	if((pseudo_batt_info.mode == 1)&&(!is_factory_cable())){
 		qpnp_chg_iusbmax_set(chip, PSEUDO_BATT_MAX);
@@ -5406,17 +5406,17 @@ qpnp_chg_adc_notification(enum qpnp_tm_state state, void *ctx)
 			state == ADC_TM_WARM_STATE ? "warm" : "cool");
 
 #ifdef CONFIG_LGE_PM_CHARGING_TEMP_SCENARIO
-	/*             
-                                                        
-                                                      
-                                                
-                                                     
-                                 */
+	/* LGE_CHANGE_S
+	return was temporary added, it cause of low temperature
+	discharging/recharging sceanario conflict over LGE's.
+	issue is after dischaging low batt temperature,
+	it couldn't recharging before approximate 17 degree.
+	please someone to fix this code.*/
 	return;
 #endif
 	if (state == ADC_TM_WARM_STATE) {
-/*                                                                                                         
-                                                                      */
+/* LGE_CHANGE_S : It is fixed for occurring infinite ADC TM IRQ. Qualcomm confirmed it through SR 01215563.
+				  If it is applied to Qualcomm original code, it will be removed. */
 #ifdef CONFIG_LGE_PM
 		if (temp >= chip->warm_bat_decidegc) {
 #else
@@ -5446,7 +5446,7 @@ qpnp_chg_adc_notification(enum qpnp_tm_state state, void *ctx)
 #else
 		if (temp < chip->cool_bat_decidegc) {
 #endif
-/*              */
+/* LGE_CHANGE_E */
 			/* Normal to cool */
 			bat_warm = false;
 			bat_cool = true;
@@ -5848,7 +5848,7 @@ qpnp_dc_power_set_property(struct power_supply *psy,
 	power_supply_changed(&chip->dc_psy);
 	return rc;
 }
-#endif//                      
+#endif//#ifndef  CONFIG_LGE_PM
 
 static int
 qpnp_batt_power_set_property(struct power_supply *psy,
@@ -6082,7 +6082,7 @@ qpnp_chg_request_irqs(struct qpnp_chg_chip *chip)
 
 			enable_irq_wake(chip->batt_pres.irq);
 
-/*                            */
+/* LGE not useed BTM feature  */
 #ifndef CONFIG_LGE_PM
 			chip->batt_temp_ok.irq = spmi_get_irq_byname(spmi,
 						spmi_resource, "bat-temp-ok");
@@ -6670,7 +6670,7 @@ qpnp_chg_hwinit(struct qpnp_chg_chip *chip, u8 subtype,
 	return rc;
 }
 
-/*                                          */
+/* LGE_CHANGE_S: Cable Detect & Current Set */
 #ifdef CONFIG_LGE_PM
 static unsigned int cable_smem_size;
 unsigned int lge_chg_cable_type(void)
@@ -6679,7 +6679,7 @@ unsigned int lge_chg_cable_type(void)
 }
 EXPORT_SYMBOL(lge_chg_cable_type);
 #endif
-/*              */
+/* LGE_CHANGE_E */
 
 #define OF_PROP_READ(chip, prop, qpnp_dt_property, retval, optional)	\
 do {									\
@@ -6741,14 +6741,14 @@ qpnp_charger_read_dt_props(struct qpnp_chg_chip *chip)
 		}
 	}
 
-/*              */
+/* LGE_CHANGE_S */
 #ifdef CONFIG_LGE_PM_CHARGING_EXTERNAL_OVP
 	chip->ext_ovp_gpio = of_get_named_gpio_flags(chip->spmi->dev.of_node, "lge,ext_ovp_gpio" ,0 ,NULL );
 	if(of_property_read_u32(chip->spmi->dev.of_node, "lge,ext_ovp_slow_chg_trim",
 			&chip->ext_ovp_slow_chg_trim))
 		pr_err("lge,ext_ovp_slow_chg_trim is not defined\n");
 #endif
-/*              */
+/* LGE_CHANGE_E */
 	if (!chip->vbatdet_max_err_mv)
 		chip->vbatdet_max_err_mv = VBATDET_MAX_ERR_MV;
 
@@ -7282,7 +7282,7 @@ qpnp_charger_probe(struct spmi_device *spmi)
     enum lge_boot_mode_type boot_mode = 0;
 #endif
 
-/*                                          */
+/* LGE_CHANGE_S: Cable Detect & Current Set */
 #ifdef CONFIG_LGE_PM
 	unsigned int *p_cable_type = (unsigned int *)
 		(smem_get_entry(SMEM_ID_VENDOR1, &cable_smem_size));
@@ -7294,7 +7294,7 @@ qpnp_charger_probe(struct spmi_device *spmi)
 
 	pr_info("[LGE] cable_type is = %d\n", cable_type);
 #endif
-/*              */
+/* LGE_CHANGE_E */
 
 	chip = devm_kzalloc(&spmi->dev,
 			sizeof(struct qpnp_chg_chip), GFP_KERNEL);
@@ -7559,7 +7559,7 @@ qpnp_charger_probe(struct spmi_device *spmi)
         chip->insertion_ocv_uv = -EINVAL;
         chip->batt_present = qpnp_chg_is_batt_present(chip);
 
-/*                                                                                       */
+/* BEGIN : janghyun.baek@lge.com 2013-01-25 Draw max current when factory cable inserted */
 #ifdef CONFIG_LGE_PM
 	if(is_factory_cable()){
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
@@ -7578,7 +7578,7 @@ qpnp_charger_probe(struct spmi_device *spmi)
 #endif
 	}
 #endif
-/*                                        */
+/* END : janghyun.baek@lge.com 2013-01-25 */
 
 	if (chip->bat_if_base) {
 		chip->batt_psy.name = "battery";
@@ -7655,8 +7655,8 @@ qpnp_charger_probe(struct spmi_device *spmi)
 #ifdef CONFIG_LGE_PM_VZW_LLK
 	INIT_DELAYED_WORK(&chip->vzw_llk_stop_chg_work, vzw_llk_stop_chg);
 #endif
-    /*               */
-    /*                                                */
+    /* LGE_CHANGE_S: */
+    /* LGE do not use DC Charger, DC -> AC(TA) change */
 #ifdef  CONFIG_LGE_PM
 		chip->dc_psy.name = "ac";
 		chip->dc_psy.type = POWER_SUPPLY_TYPE_MAINS;
@@ -7693,7 +7693,7 @@ qpnp_charger_probe(struct spmi_device *spmi)
 		}
 	}
 #endif
-	/*              */
+	/* LGE_CHANGE_E */
 
 	/* Turn on appropriate workaround flags */
 	rc = qpnp_chg_setup_flags(chip);
@@ -7760,16 +7760,16 @@ qpnp_charger_probe(struct spmi_device *spmi)
 	power_supply_set_present(chip->usb_psy,
 			qpnp_chg_is_usb_chg_plugged_in(chip));
 
-/*                                                                                                    */
+/* LGE_CHANGE_S : It is fixed for detecting AC and USB problem after connecting TA cable and boot-up. */
 #ifndef CONFIG_LGE_PM
-	/*                                                                        
-                                                                                    */
+	/* LGE does not use this code because it is not matched with LGE scenario.
+	 * Qualcomm confirmed that it is possible to remove this code through SR 01217561. */
 	/* Set USB psy online to avoid userspace from shutting down if battery
 	 * capacity is at zero and no chargers online. */
 	if (qpnp_chg_is_usb_chg_plugged_in(chip))
 		power_supply_set_online(chip->usb_psy, 1);
 #endif
-/*              */
+/* LGE_CHANGE_E */
 
 #ifdef CONFIG_LGE_PM_WORKAROUND_PORT_OPEN_FAIL_IN_FACTORY_TEST
         boot_mode = lge_get_boot_mode();

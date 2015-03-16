@@ -49,14 +49,14 @@
 #include <mach/msm_bus.h>
 #include <mach/rpm-regulator.h>
 
-/*                               */
+/* LGE_CHANGE_S: Cable Detection */
 #ifdef  CONFIG_LGE_PM
 #include <mach/board_lge.h>
 #include <linux/power_supply.h>
 #include <mach/restart.h>
 #include <linux/reboot.h>
 #endif
-/*              */
+/* LGE_CHANGE_E */
 
 #include <linux/qpnp/qpnp-adc.h>
 #include <linux/qpnp-misc.h>
@@ -1146,7 +1146,7 @@ static int msm_otg_suspend(struct msm_otg *motg)
 #else
 		msm_hsusb_ldo_enable(motg, USB_PHY_REG_OFF);
 #endif // (defined (CONFIG_MACH_MSM8X10_W3DS_TIM_BR) || defined (CONFIG_MACH_MSM8X10_W3DS_GLOBAL_COM) || defined (CONFIG_MACH_MSM8X10_W3C_VZW))
-#endif //                         
+#endif // CONFIG_USB_G_LGE_ANDROID
 		motg->lpm_flags |= PHY_PWR_COLLAPSED;
 	} else if (motg->caps & ALLOW_PHY_REGULATORS_LPM &&
 			!host_bus_suspend && !device_bus_suspend && !dcp) {
@@ -1253,7 +1253,7 @@ static int msm_otg_resume(struct msm_otg *motg)
 #else
 		msm_hsusb_ldo_enable(motg, USB_PHY_REG_ON);
 #endif // (defined (CONFIG_MACH_MSM8X10_W3DS_TIM_BR) || defined (CONFIG_MACH_MSM8X10_W3DS_GLOBAL_COM) || defined (CONFIG_MACH_MSM8X10_W3C_VZW))
-#endif //                         
+#endif // CONFIG_USB_G_LGE_ANDROID
 		motg->lpm_flags &= ~PHY_PWR_COLLAPSED;
 	} else if (motg->lpm_flags & PHY_REGULATORS_LPM) {
 		msm_hsusb_ldo_enable(motg, USB_PHY_REG_LPM_OFF);
@@ -1432,7 +1432,7 @@ static int msm_otg_notify_power_supply(struct msm_otg *motg, unsigned mA)
 		goto psy_error;
 	}
 
-	/*                                          */
+	/* LGE_CHANGE_S: Cable Detect & Current Set */
 #ifdef CONFIG_LGE_PM
 	if (motg->chg_type == USB_DCP_CHARGER || motg->chg_type == USB_PROPRIETARY_CHARGER ||
 			motg->chg_type == USB_FLOATED_CHARGER){
@@ -1460,7 +1460,7 @@ static int msm_otg_notify_power_supply(struct msm_otg *motg, unsigned mA)
 
 	pr_debug("[LGE] motg->cur_power: %d mA: %d\n", motg->cur_power, mA);
 #endif
-	/*              */
+	/* LGE_CHANGE_E */
 
 	if (motg->cur_power == 0 && mA > 2) {
 #ifdef CONFIG_LGE_PM
@@ -1528,11 +1528,11 @@ static int msm_otg_notify_power_supply(struct msm_otg *motg, unsigned mA)
 		}
 #endif
 
-		/*              */
+		/* LGE_CHANGE_S */
 		/* Below line comes from 'msm_otg_sm_work' because of AC(TA) removal detection*/
 		if(mA == 0)
 			motg->chg_type = USB_INVALID_CHARGER;
-		/*              */
+		/* LGE_CHANGE_E */
 	}
 	// Suspend Mode
 	else if (motg->cur_power > 0 && (mA == 2)) {
@@ -1639,7 +1639,7 @@ static void msm_otg_notify_charger(struct msm_otg *motg, unsigned mA)
 			"Failed notifying %d charger type to PMIC\n",
 							motg->chg_type);
 
-/*                               */
+/* LGE_CHANGE_S: Cable Detection */
 #if defined (CONFIG_LGE_PM) && ( !defined (CONFIG_MACH_MSM8X10_W3C_VZW) && !defined (CONFIG_MACH_MSM8X10_W5C_VZW) )
 	cable = lge_pm_get_cable_type();
 
@@ -1682,7 +1682,7 @@ static void msm_otg_notify_charger(struct msm_otg *motg, unsigned mA)
         }
     }
 #endif
-/*              */
+/* LGE_CHANGE_E */
 
 	if (motg->cur_power == mA)
 		return;
@@ -3150,14 +3150,14 @@ static void msm_otg_sm_work(struct work_struct *w)
 #endif
 			dcp = (motg->chg_type == USB_DCP_CHARGER);
 			motg->chg_state = USB_CHG_STATE_UNDEFINED;
-            /*              */
+            /* LGE_CHANGE_S */
             /* Below line is moved to 'msm_otg_notify_power_supply'
             * for AC(TA) removal detection
             */
             #ifndef CONFIG_LGE_PM
 			motg->chg_type = USB_INVALID_CHARGER;
             #endif
-            /*              */
+            /* LGE_CHANGE_E */
 #if( defined (CONFIG_TOUCHSCREEN_ATMEL_S336) || defined (CONFIG_LGE_TOUCHSCREEN_SYNAPTIC) \
 				|| defined (CONFIG_TOUCHSCREEN_ATMEL_T641) || defined (CONFIG_TOUCHSCREEN_ATMEL_T1664) ) && !defined(CONFIG_MACH_MSM8926_AKA_KR)
 					trigger_usb_state_from_otg(0);

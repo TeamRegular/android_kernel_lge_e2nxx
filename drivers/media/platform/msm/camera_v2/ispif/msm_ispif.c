@@ -98,13 +98,13 @@ static int msm_ispif_reset_hw(struct ispif_device *ispif)
 	long timeout = 0;
 	struct clk *reset_clk[ARRAY_SIZE(ispif_8974_reset_clk_info)];
 
-/*                                                                                                  */
+/*LGE CHANGE_S, 2013-12-13, this is for shutter lag issue, STOP_IMMEDIATELY, youngwook.song@lge.com */
 #if defined(CONFIG_HI351)
 	if(ispif->hw_num_isps > 1){
 #else
 	{
 #endif
-/*                                                                                                  */
+/*LGE CHANGE_E, 2013-12-13, this is for shutter lag issue, STOP_IMMEDIATELY, youngwook.song@lge.com */
 	rc = msm_cam_clk_enable(&ispif->pdev->dev,
 		ispif_8974_reset_clk_info, reset_clk,
 		ARRAY_SIZE(ispif_8974_reset_clk_info), 1);
@@ -153,13 +153,13 @@ static int msm_ispif_reset_hw(struct ispif_device *ispif)
 		}
 	}
 
-/*                                                                                                  */
+/*LGE CHANGE_S, 2013-12-13, this is for shutter lag issue, STOP_IMMEDIATELY, youngwook.song@lge.com */
 #if defined(CONFIG_HI351)
 	if(ispif->hw_num_isps > 1){
 #else
 	{
 #endif
-/*                                                                                                  */
+/*LGE CHANGE_E, 2013-12-13, this is for shutter lag issue, STOP_IMMEDIATELY, youngwook.song@lge.com */
 	rc = msm_cam_clk_enable(&ispif->pdev->dev,
 		ispif_8974_reset_clk_info, reset_clk,
 		ARRAY_SIZE(ispif_8974_reset_clk_info), 0);
@@ -224,8 +224,8 @@ static int msm_ispif_reset(struct ispif_device *ispif)
 			ISPIF_VFE_m_PIX_INTF_n_CID_MASK(i, 0));
 		msm_camera_io_w(0, ispif->base +
 			ISPIF_VFE_m_PIX_INTF_n_CID_MASK(i, 1));
-/*                                                                                     */
-#if 1 //                                                                                                    
+/*LGE_CHANGE_S, By QCT SR#01360225, this is added by youngwook.song@lge.com 2013.11.16 */
+#if 1 //defined CONFIG_HI351 /* LGE_CHANGE, jaehan.jeong, 2013.11.29, Applied both on msm8x10 and msm8x26 */
 		msm_camera_io_w(0, ispif->base +
 			ISPIF_VFE_m_RDI_INTF_n_CID_MASK(i, 0));
 		msm_camera_io_w(0, ispif->base +
@@ -240,7 +240,7 @@ static int msm_ispif_reset(struct ispif_device *ispif)
 		msm_camera_io_w(0, ispif->base +
 			ISPIF_VFE_m_PIX_INTF_n_CID_MASK(i, 2));
 #endif
-/*                                                                                     */
+/*LGE_CHANGE_E, By QCT SR#01360225, this is added by youngwook.song@lge.com 2013.11.16 */
 
 		msm_camera_io_w(0, ispif->base +
 			ISPIF_VFE_m_PIX_INTF_n_CROP(i, 0));
@@ -911,12 +911,12 @@ static int msm_ispif_set_vfe_info(struct ispif_device *ispif,
 	return 0;
 }
 
-/*                                               */
+/* LGE_CHANGE, youngwook.song@lge.com, 2014-03-21*/
 /* uint32_t session_id variable has been added due to the shutter lag patch. */
 /* if we do not distinguish Front and Rear Camera with that id,                     */
 /*  then kernel crash comes out in case of switching camera to the front       */
 static int msm_ispif_init(struct ispif_device *ispif,
-	uint32_t csid_version, uint32_t session_id) /*                                                                                     */
+	uint32_t csid_version, uint32_t session_id) /* LGE_CHANGE, jaehan.jeong, 2014.3.21, To deliver session id for msm_ispif in kernel. */
 {
 	int rc = 0;
 
@@ -974,13 +974,13 @@ static int msm_ispif_init(struct ispif_device *ispif,
 		goto error_ahb;
 	}
 
-/*                                               */
+/* LGE_CHANGE, youngwook.song@lge.com, 2014-03-21*/
 /* uint32_t session_id variable has been added due to the shutter lag patch. */
 /* if we do not distinguish Front and Rear Camera with that id,                     */
 /*  then kernel crash comes out in case of switching camera to the front       */
-/*                                                                                                  */
+/*LGE CHANGE_S, 2013-12-13, this is for shutter lag issue, STOP_IMMEDIATELY, youngwook.song@lge.com */
 #if defined(CONFIG_HI351)
-	if(session_id == 1)  /*                                                                                                                */
+	if(session_id == 1)  /* LGE_CHANGE, jaehan.jeong, 2014.3.19, To deliver session id for msm_ispif in kernel. session 1 means rear camera*/
 		msm_ispif_reset_hw(ispif);
 #else
 	if (of_device_is_compatible(ispif->pdev->dev.of_node,
@@ -989,7 +989,7 @@ static int msm_ispif_init(struct ispif_device *ispif,
 		msm_ispif_reset_hw(ispif);
 	}
 #endif
-/*                                                                                                  */
+/*LGE CHANGE_E, 2013-12-13, this is for shutter lag issue, STOP_IMMEDIATELY, youngwook.song@lge.com */
 
 	rc = msm_ispif_reset(ispif);
 	if (rc == 0) {
@@ -1047,12 +1047,12 @@ static long msm_ispif_cmd(struct v4l2_subdev *sd, void *arg)
 		ispif->enb_dump_reg = pcdata->reg_dump; /* save dump config */
 		break;
 	case ISPIF_INIT:
-/*                                               */
+/* LGE_CHANGE, youngwook.song@lge.com, 2014-03-21*/
 /* uint32_t session_id variable has been added due to the shutter lag patch. */
 /* if we do not distinguish Front and Rear Camera with that id,                     */
 /*  then kernel crash comes out in case of switching camera to the front       */
 //		rc = msm_ispif_init(ispif, pcdata->csid_version);
-		rc = msm_ispif_init(ispif, pcdata->csid_version, pcdata->session_id); /*                                                                                     */
+		rc = msm_ispif_init(ispif, pcdata->csid_version, pcdata->session_id); /* LGE_CHANGE, jaehan.jeong, 2014.3.19, To deliver session id for msm_ispif in kernel. */
 		msm_ispif_io_dump_reg(ispif);
 		break;
 	case ISPIF_CFG:

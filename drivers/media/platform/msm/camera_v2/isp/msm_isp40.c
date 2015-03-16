@@ -347,25 +347,25 @@ static void msm_vfe40_init_hardware_reg(struct vfe_device *vfe_dev)
 	/* BUS_CFG */
 	msm_camera_io_w(0x10000001, vfe_dev->vfe_base + 0x50);
 
-/*                                                                                          */
-#ifdef CONFIG_LG_PROXY /*                      */
+/* LGE_CHANGE_S, scaler problem fix  (#CN 01452263, #CR622416), 2014-04-03, kh.kang@lge.com */
+#ifdef CONFIG_LG_PROXY /* LGE_FEATURE_SEAMLESS */
 	msm_camera_io_w(0xF80000F3, vfe_dev->vfe_base + 0x28);
 #else // original
 	msm_camera_io_w(0xE00000F3, vfe_dev->vfe_base + 0x28);
 #endif
-/*                                                                                          */
+/* LGE_CHANGE_E, scaler problem fix  (#CN 01452263, #CR622416), 2014-04-03, kh.kang@lge.com */
 
 	msm_camera_io_w_mb(0xFEFFFFFF, vfe_dev->vfe_base + 0x2C);
 	msm_camera_io_w(0xFFFFFFFF, vfe_dev->vfe_base + 0x30);
 	msm_camera_io_w_mb(0xFEFFFFFF, vfe_dev->vfe_base + 0x34);
 
-#ifdef CONFIG_LG_PROXY /*                      */
-/*                                                                                     */
+#ifdef CONFIG_LG_PROXY /* LGE_FEATURE_SEAMLESS */
+/* LGE_CHANGE_S, init hw register properly (#CN 01515834), 2014-04-17, kh.kang@lge.com */
 	msm_camera_io_w(1, vfe_dev->vfe_base + 0x24);
 	msm_camera_io_w(0, vfe_dev->vfe_base + 0x30);
 	msm_camera_io_w_mb(0, vfe_dev->vfe_base + 0x34);
 	msm_camera_io_w(1, vfe_dev->vfe_base + 0x24);
-/*                                                                                     */
+/* LGE_CHANGE_E, init hw register properly (#CN 01515834), 2014-04-17, kh.kang@lge.com */
 #endif
 }
 
@@ -617,7 +617,7 @@ static long msm_vfe40_reset_hardware(struct vfe_device *vfe_dev ,
 	init_completion(&vfe_dev->reset_complete);
 	msm_camera_io_w_mb(rst_val, vfe_dev->vfe_base + 0xC);
 	return wait_for_completion_interruptible_timeout(
-		&vfe_dev->reset_complete, msecs_to_jiffies(100)); /*                                                                                                                           */
+		&vfe_dev->reset_complete, msecs_to_jiffies(100)); /* LGE_CHANGE, jaehan.jeong, 2014.4.30, increased timeout delay from 50 ms to 100ms to avoid hw reset timeout, CN# 01535257. */
 }
 
 static void msm_vfe40_axi_reload_wm(
@@ -660,8 +660,8 @@ static void msm_vfe40_axi_cfg_comp_mask(struct vfe_device *vfe_dev,
 	 * microcontroller to update certain VFE registers
 	 */
 
-/*                                                                                          */
-#ifdef CONFIG_LG_PROXY /*                      */
+/* LGE_CHANGE_S, scaler problem fix  (#CN 01452263, #CR622416), 2014-04-03, kh.kang@lge.com */
+#ifdef CONFIG_LG_PROXY /* LGE_FEATURE_SEAMLESS */
 	if (stream_info->stream_src == PIX_VIEWFINDER) {
 		comp_mask |= (axi_data->composite_info[comp_mask_index].
 		stream_composite_mask << 16);
@@ -688,7 +688,7 @@ static void msm_vfe40_axi_cfg_comp_mask(struct vfe_device *vfe_dev,
 		irq_mask |= BIT(28);
 	}
 #endif
-/*                                                                                          */
+/* LGE_CHANGE_E, scaler problem fix  (#CN 01452263, #CR622416), 2014-04-03, kh.kang@lge.com */
 
 
 	msm_camera_io_w(comp_mask, vfe_dev->vfe_base + 0x40);
@@ -708,8 +708,8 @@ static void msm_vfe40_axi_clear_comp_mask(struct vfe_device *vfe_dev,
 	irq_mask = msm_camera_io_r(vfe_dev->vfe_base + 0x28);
 	irq_mask &= ~(1 << (comp_mask_index + 25));
 
-/*                                                                                          */
-#ifdef CONFIG_LG_PROXY /*                      */
+/* LGE_CHANGE_S, scaler problem fix  (#CN 01452263, #CR622416), 2014-04-03, kh.kang@lge.com */
+#ifdef CONFIG_LG_PROXY /* LGE_FEATURE_SEAMLESS */
 	if (stream_info->stream_src == PIX_VIEWFINDER) {
 		comp_mask &= ~(axi_data->composite_info[comp_mask_index].
 		stream_composite_mask << 16);
@@ -736,7 +736,7 @@ static void msm_vfe40_axi_clear_comp_mask(struct vfe_device *vfe_dev,
 		irq_mask &= ~BIT(28);
 	}
 #endif
-	/*                                                                                          */
+	/* LGE_CHANGE_E, scaler problem fix  (#CN 01452263, #CR622416), 2014-04-03, kh.kang@lge.com */
 
 	msm_camera_io_w(comp_mask, vfe_dev->vfe_base + 0x40);
 	msm_camera_io_w(irq_mask, vfe_dev->vfe_base + 0x28);
@@ -951,13 +951,13 @@ static void msm_vfe40_update_camif_state(struct vfe_device *vfe_dev,
 		vfe_dev->axi_data.src_info[VFE_PIX_0].active = 0;
 	} else if (update_state == DISABLE_CAMIF_IMMEDIATELY) {
 		msm_camera_io_w_mb(0x6, vfe_dev->vfe_base + 0x2F4);
-/*                                                                               */
+/*LGE_CHANGE_S, youngwook.song hi351 shutter lag patch code from QCT, 2014-03-21 */
 #if defined(CONFIG_HI351)
 		vfe_dev->hw_info->vfe_ops.axi_ops.halt(vfe_dev);
 		vfe_dev->hw_info->vfe_ops.core_ops.reset_hw(vfe_dev,ISP_RST_SOFT);
 		vfe_dev->hw_info->vfe_ops.core_ops.init_hw_reg(vfe_dev);
 #endif
-/*                                                                               */
+/*LGE_CHANGE_E, youngwook.song hi351 shutter lag patch code from QCT, 2014-03-21 */
 		vfe_dev->axi_data.src_info[VFE_PIX_0].active = 0;
 	}
 }
@@ -1138,7 +1138,7 @@ static void msm_vfe40_cfg_axi_ub_equal_default(
 	uint32_t prop_size = 0;
 	uint32_t wm_ub_size;
 	uint32_t delta;
-	uint64_t temp;  /*                                                                        */
+	uint64_t temp;  /* LGE_CHANGE, fixed Bus overflow issue, 2014-06-14, yousung.kang@lge.com */
 
 	pr_err("%s \n", __func__);
 	
@@ -1152,7 +1152,7 @@ static void msm_vfe40_cfg_axi_ub_equal_default(
 		axi_data->hw_info->min_wm_ub * num_used_wms;
 	for (i = 0; i < axi_data->hw_info->num_wm; i++) {
 		if (axi_data->free_wm[i]) {
-/*                                                                          */
+/* LGE_CHANGE_S, fixed Bus overflow issue, 2014-06-14, yousung.kang@lge.com */
 //			delta =
 //				(axi_data->wm_image_size[i] *
 //					prop_size)/total_image_size;
@@ -1160,7 +1160,7 @@ static void msm_vfe40_cfg_axi_ub_equal_default(
 			do_div(temp,total_image_size);
 			//pr_err("_debug_: i = %d, old delta = %u, new delta = %u\n", i, delta, ((uint32_t) temp) );
 			delta = (uint32_t)temp;
-/*                                                                          */
+/* LGE_CHANGE_E, fixed Bus overflow issue, 2014-06-14, yousung.kang@lge.com */
 
 			
 			wm_ub_size = axi_data->hw_info->min_wm_ub + delta;

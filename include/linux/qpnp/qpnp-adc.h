@@ -20,8 +20,8 @@
 
 #include <linux/kernel.h>
 #include <linux/list.h>
-/*                                             
-                                                   */
+/*Qualcomm patch -BMS tuning eunho.yang@lge.com
+  *Issue : Battery soc didn't match battery voltage*/
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
@@ -1021,8 +1021,8 @@ struct qpnp_adc_amux_properties {
 	enum qpnp_vadc_trigger		trigger_channel;
 	struct qpnp_vadc_chan_properties	chan_prop[0];
 };
-/*                                             
-                                                   */
+/*Qualcomm patch -BMS tuning eunho.yang@lge.com
+  *Issue : Battery soc didn't match battery voltage*/
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
@@ -1400,8 +1400,8 @@ int32_t qpnp_vadc_iadc_sync_complete_request(struct qpnp_vadc_chip *dev,
  * @dev:	Structure device for qpnp vadc
  * @result:	Voltage in uV that needs compensation.
  */
-/*                                             
-                                                   */
+/*Qualcomm patch -BMS tuning eunho.yang@lge.com
+  *Issue : Battery soc didn't match battery voltage*/
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \
@@ -1535,8 +1535,8 @@ static inline int32_t qpnp_vadc_iadc_sync_complete_request(
 { return -ENXIO; }
 static inline int32_t qpnp_vbat_sns_comp_result(struct qpnp_vadc_chip *dev,
 						int64_t *result)
-/*                                             
-                                                   */
+/*Qualcomm patch -BMS tuning eunho.yang@lge.com
+  *Issue : Battery soc didn't match battery voltage*/
 #if defined (CONFIG_MACH_MSM8226_E7WIFI) || defined (CONFIG_MACH_MSM8226_E8WIFI) || \
     defined (CONFIG_MACH_MSM8926_E8LTE) || defined (CONFIG_MACH_MSM8926_E8LTE_KR) || defined (CONFIG_MACH_MSM8226_E9WIFI) || \
     defined (CONFIG_MACH_MSM8226_E9WIFIN) || defined (CONFIG_MACH_MSM8926_E7LTE_ATT_US) || \

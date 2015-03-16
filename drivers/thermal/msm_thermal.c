@@ -876,7 +876,7 @@ static void __ref do_core_control(long temp)
 	mutex_unlock(&core_control_mutex);
 }
 #ifndef CONFIG_LGE_PM
-/*                                    */
+/* LGE do not use hotplug func in KTM */
 /* Call with core_control_mutex locked */
 static int __ref update_offline_cores(int val)
 {

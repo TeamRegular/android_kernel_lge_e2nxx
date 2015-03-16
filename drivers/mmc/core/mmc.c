@@ -116,12 +116,12 @@ static int mmc_decode_cid(struct mmc_card *card)
 		card->cid.serial	= UNSTUFF_BITS(resp, 16, 32);
 		card->cid.month		= UNSTUFF_BITS(resp, 12, 4);
 #ifdef CONFIG_MACH_LGE
-		/*           
-                                    
-                                         
-                                                      
-                                                   
-                                  
+		/* LGE_CHANGE
+		 * modify date cid register values
+		 * see CID register part in JEDEC Spec.
+		 * ex) 0000 : 1997, or 2013 if EXT_CSD_REV [192] > 4
+		 * don't care MDT y Field[11:8] value over 1101b.
+		 * 2014-03-07, B2-BSP-FS@lge.com
    */
 		if(card->ext_csd.rev > 4)
 			card->cid.year		= UNSTUFF_BITS(resp, 8, 4) + 2013;
@@ -1444,9 +1444,9 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 		if (err)
 			goto free_card;
 #ifndef CONFIG_MACH_LGE
-		/*           
-                                                                           
-                                   
+		/* LGE_CHANGE
+		 *  ext_csd.rev value are required while decoding cid.year, so move down.
+		 *  2014-03-07, B2-BSP-FS@lge.com
    */
 		err = mmc_decode_cid(card);
 		if (err)
@@ -1476,9 +1476,9 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 		if (err)
 			goto free_card;
 #ifdef CONFIG_MACH_LGE
-		/*           
-                     
-                                  
+		/* LGE_CHANGE
+		 * decode cid here.
+		 * 2014-03-07, B2-BSP-FS@lge.com
    */
 		err = mmc_decode_cid(card);
 		if (err)
@@ -1732,10 +1732,10 @@ int mmc_send_long_pon(struct mmc_card *card)
 	return err;
 }
 
-/*              
-                       
-                                         
-                                                                                                           
+/* LGE_CHANGE_S 
+ * Date   : 23/JUN/2014
+ * Author : bohyun.jung, D3-5T-FS@lge.com
+ * Change : send SLEEP_NOTIFICATION before enter sleep. POWER_OFF_NOTIFICATION with 0x4(SLEEP_NOTIFICATION)
  */
 #if defined (CONFIG_LGE_MMC_PON_SLEEP_NOTI)
 int mmc_send_sleep_pon(struct mmc_card *card)

@@ -1385,12 +1385,12 @@ static int msm_compr_set_metadata(struct snd_compr_stream *cstream,
 		return -EINVAL;
 
 	prtd = cstream->runtime->private_data;
-//                                        
+//LGE_UPDATE_S beekay.lee@lge.com WBT test
 #if 0
 	if (!prtd && !prtd->audio_client)
 #endif
 	if (!prtd || !prtd->audio_client)
-//            
+//LGE_UPDATE_E
 		return -EINVAL;
 	ac = prtd->audio_client;
 	if (metadata->key == SNDRV_COMPRESS_ENCODER_PADDING) {

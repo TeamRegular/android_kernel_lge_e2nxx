@@ -630,7 +630,7 @@ static int mdss_dsi_panel_on(struct mdss_panel_data *pdata)
 
 #ifdef CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL
 	pr_info("[LCD] %s: defined CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL", __func__);
-	if (!is_dsv_cont_splash_screening_f && ctrl->on_cmds.cmd_cnt)
+	if (!is_dsv_cont_splash_screening_f && ctrl->on_cmds.cmd_cnt) //LGE Change
 		mdss_dsi_panel_cmds_send(ctrl, &ctrl->on_cmds);
 #else
 	if (ctrl->on_cmds.cmd_cnt) //qct original

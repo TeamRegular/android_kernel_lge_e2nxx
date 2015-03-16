@@ -91,7 +91,7 @@ static const struct soc_enum msm8226_auxpcm_enum[] = {
 #define I2S_PCM_SEL 1
 #define I2S_PCM_SEL_OFFSET 1
 
-#if defined(CONFIG_MACH_LGE) && defined(CONFIG_SWITCH_MAX1462X) //                                               
+#if defined(CONFIG_MACH_LGE) && defined(CONFIG_SWITCH_MAX1462X) //LGE_UPDATE 20130626 beekay.lee@lge.com WX_MAXIM
 extern bool maxim_enabled;
 #endif
 void *def_tapan_mbhc_cal(void);
@@ -210,11 +210,11 @@ static int clk_users;
 static int ext_spk_amp_gpio = -1;
 #ifdef CONFIG_LGE_STEREO_SPEAKER
 static int ext_spk_amp_gpio2 = -1;
-#endif //                         
+#endif //CONFIG_LGE_STEREO_SPEAEKR
 #ifdef CONFIG_LGE_SW_IRRC_MUTE_SPEAKER
 static int flag_mute_spk_for_swirrc = 0;
 void mute_spk_for_swirrc (int enable);
-#endif //                               
+#endif //CONFIG_LGE_SW_IRRC_MUTE_SPEAKER
 static int vdd_spkr_gpio = -1;
 static int msm_proxy_rx_ch = 2;
 static int slim0_rx_bit_format = SNDRV_PCM_FORMAT_S16_LE;
@@ -359,14 +359,14 @@ static void msm8226_ext_spk_power_amp_enable(u32 enable)
 	pr_debug("%s: %s external speaker PAs.\n", __func__,
 		enable ? "Enable" : "Disable");
 }
-#endif //                         
+#endif //CONFIG_LGE_STEREO_SPEAKER
 
 static void msm8226_ext_spk_power_amp_on(u32 spk)
 {
 
 #ifdef CONFIG_LGE_SW_IRRC_MUTE_SPEAKER
 	if (!flag_mute_spk_for_swirrc){
-#endif //                               
+#endif //CONFIG_LGE_SW_IRRC_MUTE_SPEAKER
 
 	if (spk & (LO_1_SPK_AMP | LO_2_SPK_AMP)) {
 
@@ -439,7 +439,7 @@ static void msm8226_ext_spk_power_amp_on(u32 spk)
 
 #ifdef CONFIG_LGE_SW_IRRC_MUTE_SPEAKER
 	}
-#endif //                               
+#endif //CONFIG_LGE_SW_IRRC_MUTE_SPEAKER
 
 }
 
@@ -521,7 +521,7 @@ void mute_spk_for_swirrc (int enable)
 	}
 }
 EXPORT_SYMBOL_GPL(mute_spk_for_swirrc);
-#endif //                               
+#endif //CONFIG_LGE_SW_IRRC_MUTE_SPEAKER
 
 static int msm8226_ext_spkramp_event(struct snd_soc_dapm_widget *w,
 			struct snd_kcontrol *k, int event)
@@ -584,7 +584,7 @@ static const struct snd_soc_dapm_widget msm8226_dapm_widgets[] = {
 
 	SND_SOC_DAPM_MIC("Handset Mic", NULL),
 	SND_SOC_DAPM_MIC("Headset Mic", NULL),
-    SND_SOC_DAPM_MIC("Handset SubMic", NULL), //                                                                                             
+    SND_SOC_DAPM_MIC("Handset SubMic", NULL), // LGE, 2013-06-24, seungkyu.joo@lge.com, enable Mic Bias1 external connected to AMIC3 (submic)
     SND_SOC_DAPM_MIC("ANCRight Headset Mic", NULL),
 	SND_SOC_DAPM_MIC("ANCLeft Headset Mic", NULL),
 
@@ -1316,7 +1316,7 @@ static int dummy_put(struct snd_kcontrol *kcontrol,
 {
 
 	pr_err("*******************************************************************************************");
-	pr_err("%s: timeout during offload playing. (event isn't received from ADSP within the time)", __func__ ); //                                      
+	pr_err("%s: timeout during offload playing. (event isn't received from ADSP within the time)", __func__ ); //LGE_UPDATE error message for debugging
 	pr_err("*******************************************************************************************");
 	return 1;
 }
@@ -2960,8 +2960,8 @@ static __devinit int msm8226_asoc_machine_probe(struct platform_device *pdev)
 			goto err_lineout_spkr;
 		}
 	}
-#endif //                         
-#if defined(CONFIG_MACH_LGE) && defined(CONFIG_SWITCH_MAX1462X) //                                               
+#endif //CONFIG_LGE_STEREO_SPEAKER
+#if defined(CONFIG_MACH_LGE) && defined(CONFIG_SWITCH_MAX1462X) //LGE_UPDATE 20130626 beekay.lee@lge.com WX_MAXIM
 		if(maxim_enabled) {
 			mbhc_cfg.insert_detect = false;
 			pr_info("%s: mbhc disable\n", __func__);
@@ -3005,7 +3005,7 @@ err_lineout_spkr:
 		gpio_free(ext_spk_amp_gpio2);
 		ext_spk_amp_gpio2 = -1;
 	}
-#endif //                         
+#endif //CONFIG_LGE_STEREO_SPEAEKR
 err_vdd_spkr:
 #ifdef CONFIG_SND_SOC_TPA2028D_STEREO
 	if (ext_boost_gpio >= 0) {
@@ -3053,7 +3053,7 @@ static int __devexit msm8226_asoc_machine_remove(struct platform_device *pdev)
 #ifdef CONFIG_LGE_STEREO_SPEAKER
 	if (ext_spk_amp_gpio2 >= 0)
 		gpio_free(ext_spk_amp_gpio2);
-#endif //                         
+#endif //CONFIG_LGE_STEREO_SPEAEKR
 	if (pdata->us_euro_gpio > 0)
 		gpio_free(pdata->us_euro_gpio);
 
@@ -3065,7 +3065,7 @@ static int __devexit msm8226_asoc_machine_remove(struct platform_device *pdev)
 	ext_spk_amp_gpio = -1;
 #ifdef CONFIG_LGE_STEREO_SPEAKER
 	ext_spk_amp_gpio2= -1;
-#endif //                         
+#endif //CONFIG_LGE_STEREO_SPEAEKR
 	snd_soc_unregister_card(card);
 
 	return 0;

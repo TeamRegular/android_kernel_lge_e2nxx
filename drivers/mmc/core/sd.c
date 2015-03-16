@@ -1551,9 +1551,9 @@ int mmc_attach_sd(struct mmc_host *host)
 	mmc_init_clk_scaling(host);
 
 #ifdef CONFIG_MMC_DAMAGED_SDCARD_CTRL
-	/*                                    
-                                                         
-                                                                       
+	/* LGE_CHANGE_S : bohyun.jung@lge.com 
+	 * Set damaged flag false if mmc_sd_init_card() succeed.
+	 * This flag use in mmc_detect_change() when suspend/resume condition.
   */
 	if (!(host->caps & MMC_CAP_NONREMOVABLE))
 	{
@@ -1573,9 +1573,9 @@ err:
 	mmc_detach_bus(host);
 
 #ifdef CONFIG_MMC_DAMAGED_SDCARD_CTRL
-	/*                                    
-                                                         
-                                                                       
+	/* LGE_CHANGE_S : bohyun.jung@lge.com 
+	 * Set damaged flag false if mmc_sd_init_card() succeed.
+	 * This flag use in mmc_detect_change() when suspend/resume condition.
   */
 	if (!(host->caps & MMC_CAP_NONREMOVABLE))
 	{

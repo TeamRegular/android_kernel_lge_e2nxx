@@ -408,7 +408,7 @@ static int __init msm_rq_stats_init(void)
 		snprintf(clk_name, sizeof(clk_name), "cpu%d_clk", i);
 		clk = clk_get_sys("0.qcom,rq-stats", clk_name);
 		if (IS_ERR(clk)) {
-			if (i) //                                      
+			if (i) //LGE 8x26 specific, do not use for 8974
 				clk = per_cpu(rq_cpu_clks, 0);
 		}
 		per_cpu(rq_cpu_clks, i) = clk;

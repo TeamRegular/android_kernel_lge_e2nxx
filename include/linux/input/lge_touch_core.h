@@ -19,7 +19,7 @@
 #define LGE_TOUCH_CORE_H
 
 //#define MT_PROTOCOL_A
-//                            
+//#define LGE_TOUCH_TIME_DEBUG
 #define POWER_FW_UP_LOCK	0x01
 #define POWER_SYSFS_LOCK	0x02
 

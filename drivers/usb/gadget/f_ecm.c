@@ -614,10 +614,10 @@ static int ecm_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 			struct net_device	*net;
 
 #ifdef CONFIG_USB_G_LGE_ANDROID
-			/*           
-                                                           
-                                                           
-                                      
+			/* LGE_CHANGE
+			 * Disable zlps in case of LG android USB and qct's udc.
+			 * By this, host driver can handle null packet properly.
+			 * 2011-03-01, hyunhui.park@lge.com
     */
 			ecm->port.is_zlp_ok = !(
 					gadget_is_musbhdrc(cdev->gadget)

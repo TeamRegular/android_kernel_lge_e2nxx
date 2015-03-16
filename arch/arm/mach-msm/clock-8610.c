@@ -895,7 +895,7 @@ static struct rcg_clk ce1_clk_src = {
 
 static struct clk_freq_tbl ftbl_gcc_gp1_3_clk[] = {
 #if defined(CONFIG_ANDROID_SW_IRRC)	
-	F(96000,gcc_xo,4,1,50), //                                                                  
+	F(96000,gcc_xo,4,1,50), //LGE_UPDATE 20130626 beekay.lee@lge.com WX_IRRC For value of div 4.
 #endif
 	F(19200000, gcc_xo, 1, 0, 0),
 	F_END,
@@ -1581,10 +1581,10 @@ static struct clk_ops dsi_dsi_clk_src_ops;
 static struct dsi_pll_vco_clk dsi_vco  = {
 	.vco_clk_min =  600000000,
 	.vco_clk_max = 1200000000,
-/*           
-                                                                    
-                                                              
-                                   
+/* LGE_CHANGE
+* to calculate a right value for more detailed, changed divide ratio
+* this value got from test many times, user can change anytime
+* 2013-06-08, kyeongdon.kim@lge.com
 */
 #if CONFIG_MACH_LGE
 	.pref_div_ratio = 19,
@@ -2951,7 +2951,7 @@ static struct clk_lookup msm_clocks_8610[] = {
 	CLK_LOOKUP("core_clk_pvt",              gcc_gp1_clk.c, "2-000e"),
 	CLK_LOOKUP("core_clk",                  gcc_gp2_clk.c, ""),
 #if defined(CONFIG_ANDROID_SW_IRRC)	
-	CLK_LOOKUP("core_clk",				   gcc_gp2_clk.c, "irrc"), //                                              
+	CLK_LOOKUP("core_clk",				   gcc_gp2_clk.c, "irrc"), //LGE_UPDATE 20130626 beekay.lee@lge.com WX_IRRC
 #endif
 	CLK_LOOKUP("core_clk",                  gcc_gp3_clk.c, ""),
 	CLK_LOOKUP("core_clk",         gcc_lpass_q6_axi_clk.c, ""),
@@ -3049,7 +3049,7 @@ static struct clk_lookup msm_clocks_8610[] = {
 	CLK_LOOKUP("core_clk",         pnoc_iommu_clk.c, "fd010000.qcom,iommu"),
 
 	/* MM sensor clocks */
-/*                                                                */
+/* LGE_CHANGE_S, camera mclk setting, 2013-08-28, yt.jeon@lge.com */
 #if 0 //QCT
 	CLK_LOOKUP("cam_src_clk", mclk0_clk_src.c, "6-006f"),
 	CLK_LOOKUP("cam_src_clk", mclk0_clk_src.c, "6-0034"),
@@ -3077,7 +3077,7 @@ static struct clk_lookup msm_clocks_8610[] = {
 	CLK_LOOKUP("cam_clk", mclk1_clk.c, "6-0060"),
 	CLK_LOOKUP("cam_clk", mclk1_clk.c, "6-006e"),
 #endif
-/*                                                                */
+/* LGE_CHANGE_E, camera mclk setting, 2013-08-28, yt.jeon@lge.com */
 
 
 	/* CSIPHY clocks */

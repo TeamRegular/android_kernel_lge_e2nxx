@@ -91,7 +91,7 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata, int enable)
 		}
 
 #if defined(CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL)
-		if (!has_dsv_f && pdata->panel_info.panel_power_on == 0)
+		if (!has_dsv_f && pdata->panel_info.panel_power_on == 0)//LGE Change
 			mdss_dsi_panel_reset(pdata, 1);
 #else
 		if(pdata->panel_info.panel_power_on ==0) //qct original
@@ -123,7 +123,7 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata, int enable)
 	} else {
 
 #if defined(CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL)
-		if (!has_dsv_f)
+		if (!has_dsv_f)  //LGE Change
 			mdss_dsi_panel_reset(pdata, 0);
 #else
 		mdss_dsi_panel_reset(pdata, 0); //qct original

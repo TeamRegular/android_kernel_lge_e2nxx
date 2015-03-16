@@ -56,14 +56,14 @@ static struct msm_sensor_power_setting imx219_power_setting[] = {
 		.config_val = GPIO_OUT_HIGH,
 		.delay = 1,
 	},
-/*                                                                                */
+/* LGE_CHANGE_S, add gpio setting for ldaf-en, 2014-04-07, jungryoul.choi@lge.com */
 	{
 		.seq_type = SENSOR_GPIO,
 		.seq_val = SENSOR_GPIO_LDAF_EN,
 		.config_val = GPIO_OUT_HIGH,
 		.delay = 0,
 	},
-/*                                                                                */
+/* LGE_CHANGE_E, add gpio setting for ldaf-en, 2014-04-07, jungryoul.choi@lge.com */
 	{
 		.seq_type = SENSOR_GPIO,
 		.seq_val = SENSOR_GPIO_VAF,
@@ -91,7 +91,7 @@ static struct msm_sensor_power_setting imx219_power_setting[] = {
 };
 
 #else // if not B2 Lite Or B2 Mini
-/*                                                                                                             */
+/* LGE_CHANGE_S, jaehan.jeong, 2013.7.30,  To separate power settings depending on HW revisions, [STARTS HERE] */
 static struct msm_sensor_power_setting imx219_power_setting_rev_0[] = {
 	{
 		.seq_type = SENSOR_VREG,
@@ -262,7 +262,7 @@ static struct msm_sensor_power_setting imx219_power_setting_on_8x10[] = {
 	},
 };
 #endif
-/*                                                                                                            */
+/* LGE_CHANGE_E, jaehan.jeong, 2013.7.30,  To separate power settings depending on HW revisions,  [ENDS HERE] */
 #endif // B2 Lite Or B2 Mini
 
 static struct v4l2_subdev_info imx219_subdev_info[] = {
