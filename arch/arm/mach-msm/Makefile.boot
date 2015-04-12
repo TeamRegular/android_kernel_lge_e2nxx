@@ -102,8 +102,8 @@ endif
 ifeq ($(CONFIG_MACH_LGE),y)
 	dtb-$(CONFIG_MACH_MSM8926_E2_MPCS_US)	+= msm8226-e2nam.dtb
 	dtb-$(CONFIG_MACH_MSM8926_E2_SPR_US)	+= msm8226-e2nas.dtb
-	dtb-$(CONFIG_MACH_MSM8926_E2_VTR_US)	+= msm8226-e2nac.dtb
-	dtb-$(CONFIG_MACH_MSM8926_E2_VZW_US)	+= msm8226-e2nav.dtb
+	dtb-$(CONFIG_MACH_MSM8926_E2_VTR_CA)	+= msm8226-e2nac.dtb
+	dtb-$(CONFIG_MACH_MSM8926_E2_VZW)	+= msm8226-e2nav.dtb
 else # not CONFIG_MACH_LGE
 	dtb-$(CONFIG_ARCH_MSM8226)	+= msm8226-sim.dtb
 	dtb-$(CONFIG_ARCH_MSM8226)	+= msm8226-fluid.dtb
