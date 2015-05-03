@@ -84,3 +84,6 @@ obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_RMI4_DEV)	+= synaptics_rmi_dev.o
 obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_FW_UPDATE) 	+= synaptics_fw_update.o
 obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_I2C_RMI4)		+= synaptics_i2c_rmi4.o
 obj-$(CONFIG_TOUCHSCREEN_GT9XX)		+= gt9xx/
++obj-$(CONFIG_TOUCHSCREEN_LGE_APS_TOUCHCORE_E2)	+= lge_ait_ts_core_E2.o
++obj-$(CONFIG_TOUCHSCREEN_APS_MIT200_E2)		+= lge_ait_ts_melfas_E2.o
++obj-$(CONFIG_TOUCHSCREEN_APS_MIT200_E2)		+= lge_ait_ts_mit200_E2.o

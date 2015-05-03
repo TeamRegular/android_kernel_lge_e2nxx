@@ -1,0 +1,90 @@
+config MACH_LGE
+	bool
+
+menu "LGE Board Selection"
+
+config MACH_MSM8926_E2_SPR_US
+        depends on ARCH_MSM8226
+        select MACH_LGE
+        bool "MSM8926 E2 SPR US"
+        help
+          Support for the Qualcomm MSM8926 E2 SPR US device.
+
+config MACH_MSM8926_E2_MPCS_US
+        depends on ARCH_MSM8226
+        select MACH_LGE
+        bool "MSM8926 E2 MPCS US"
+        help
+          Support for the Qualcomm MSM8926 E2 MPCS US device.
+
+config MACH_MSM8926_E2_BELL_CA
+        depends on ARCH_MSM8226
+        select MACH_LGE
+        bool "MSM8926 E2 BELL CA"
+        help
+          Support for the Qualcomm MSM8926 E2 BELL CA device.
+
+config MACH_MSM8926_E2_RGS_CA
+        depends on ARCH_MSM8226
+        select MACH_LGE
+        bool "MSM8926 E2 RGS CA"
+        help
+          Support for the Qualcomm MSM8926 E2 RGS CA device.
+
+config MACH_MSM8926_E2_VTR_CA
+        depends on ARCH_MSM8226
+        select MACH_LGE
+        bool "MSM8926 E2 VTR CA"
+        help
+          Support for the Qualcomm MSM8926 E2 VTR CA device.
+
+config MACH_MSM8926_E2_VZW
+        depends on ARCH_MSM8226
+        select MACH_LGE
+        bool "MSM8926 E2 VZW"
+        help
+          Support for the Qualcomm MSM8926 E2 VZW device.
+
+endmenu
+
+menu "LGE Specific Patches"
+
+config DTS_TARGET
+	string "DTS target dir"
+	help
+	  CONFIG_DTS_TARGET should be set to support appended dts.
+
+config LGE_BOOTLOADER_LOG
+	tristate "Support LGE bootloader log"
+	default n
+	depends on MACH_LGE
+	help
+	  LGE bootloader log
+
+config LGE_BOOTLOADER_TIME_CHECKER
+	bool "Show bootloader(LK, SBL) time"
+	default n
+	depends on MACH_LGE
+	help
+	  This shows the lk and sbl1 booting time in MSM8974.
+	  If this feature is enabled, it should be check by adb shell.
+	  Device Node : sys/module/lge_bootloader_time_checker/
+
+config LGE_QFPROM_INTERFACE
+	bool "Support qfprom interface"
+	default n
+	depends on MACH_LGE
+	help
+	  LGE QFPROM DRIVER.
+
+menu "LGE Battery Profile"
+
+config LGE_PM_BATTERY_CAPACITY_2100mAh
+	bool "Support Battery Capacity : 2100mAh"
+	depends on LGE_PM_BATTERY_PROFILE_DATA
+	help
+	  LGE battery capacity for 2100mAh
+
+endmenu
+
+endmenu

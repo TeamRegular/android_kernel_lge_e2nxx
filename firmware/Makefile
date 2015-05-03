@@ -26,6 +26,16 @@ fw-shipped- += acenic/tg1.bin
 else
 acenic-objs := acenic/tg1.bin acenic/tg2.bin
 endif
+
+ifdef CONFIG_TOUCHSCREEN_APS_MIT200_E2
+mit200_fw_file := $(wildcard $(srctree)/firmware/melfas/mit200/e2/*.fw)
+$(foreach var, $(mit200_fw_file),  $(shell objcopy -I binary -O ihex $(var) $(var).ihex))
+
+mit200_fw_list := $(subst .ihex, , $(notdir $(wildcard $(srctree)/firmware/melfas/mit200/e2/*.ihex)))
+mit200_fw_files := $(foreach var, $(mit200_fw_list), melfas/mit200/e2/$(var))
+fw-shipped-$(CONFIG_TOUCHSCREEN_APS_MIT200_E2) += $(mit200_fw_files)
+endif
+
 fw-shipped-$(CONFIG_3C359) += 3com/3C359.bin
 fw-shipped-$(CONFIG_ACENIC) += $(acenic-objs)
 fw-shipped-$(CONFIG_ADAPTEC_STARFIRE) += adaptec/starfire_rx.bin \

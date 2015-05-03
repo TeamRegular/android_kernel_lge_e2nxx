@@ -595,6 +595,17 @@ config PMIC8XXX_VIBRATOR
 	  on the PM8XXX chips. The vibrator is controlled using the
 	  timed output class.
 
+config TSPDRV
+    bool "tspdrv"
+        default n
+
+config ANDROID_SW_IRRC
+	bool "Android irrc support"
+	default n
+	help
+	  This option enables device driver support for Android SW IRRC
+	  Some functions should be given by platform data for enable PWM, Motor IC, etc.
+
 config PMIC8XXX_NFC
 	tristate "Qualcomm PM8XXX support for Near Field Communication"
 	depends on MFD_PM8XXX
