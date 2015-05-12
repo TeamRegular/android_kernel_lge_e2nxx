@@ -21,11 +21,22 @@
 #include <linux/gpio.h>
 #include <linux/err.h>
 #include <linux/regulator/consumer.h>
+#ifdef CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL
+#include <mach/board_lge.h>
+#endif
 
 #include "mdss.h"
 #include "mdss_panel.h"
 #include "mdss_dsi.h"
 #include "mdss_debug.h"
+
+#if defined(CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL)
+int has_dsv_f;
+#if defined(CONFIG_LGE_LCD_DSV_CTRL)
+int dsv_control_enable = 0;
+#endif
+int dual_panel;
+#endif
 
 static int mdss_dsi_regulator_init(struct platform_device *pdev)
 {
@@ -52,6 +63,11 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata, int enable)
 	int ret;
 	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
 
+#ifdef CONFIG_MACH_LGE
+	hw_rev_type hw_rev;
+	hw_rev = lge_get_board_revno();
+#endif
+
 	if (pdata == NULL) {
 		pr_err("%s: Invalid input data\n", __func__);
 		ret = -EINVAL;
@@ -74,7 +90,20 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata, int enable)
 				__func__, ret);
 			goto error;
 		}
-
+#if defined(CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL)
+		if (!has_dsv_f && !pdata->panel_info.mipi.lp11_init) {
+			ret = mdss_dsi_panel_reset(pdata, 1);
+			if (ret) {
+				pr_err("%s: Panel reset failed. rc=%d\n",
+						__func__, ret);
+				if (msm_dss_enable_vreg(
+				ctrl_pdata->power_data.vreg_config,
+				ctrl_pdata->power_data.num_vreg, 0))
+					pr_err("Disable vregs failed\n");
+				goto error;
+			}
+		}
+#else
 		if (!pdata->panel_info.mipi.lp11_init) {
 			ret = mdss_dsi_panel_reset(pdata, 1);
 			if (ret) {
@@ -87,24 +116,41 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata, int enable)
 				goto error;
 			}
 		}
+#endif
+
+#if defined(CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL)
+		pr_info("%s: DSV FD Enable", __func__);
+		gpio_direction_output((ctrl_pdata->disp_fd_gpio), 1);
+		gpio_set_value((ctrl_pdata->disp_fd_gpio), 1);
+
+		pr_info("%s: LCD IOVCC Enable", __func__);
+		gpio_direction_output((ctrl_pdata->disp_iovcc_gpio), 1);
+		gpio_set_value((ctrl_pdata->disp_iovcc_gpio), 1);
+#endif
 	} else {
-		ret = mdss_dsi_panel_reset(pdata, 0);
-		if (ret) {
-			pr_err("%s: Panel reset failed. rc=%d\n",
-					__func__, ret);
-			goto error;
-		}
-		ret = msm_dss_enable_vreg(
-			ctrl_pdata->power_data.vreg_config,
-			ctrl_pdata->power_data.num_vreg, 0);
-		if (ret) {
-			pr_err("%s: Failed to disable vregs.rc=%d\n",
-				__func__, ret);
-		}
+#if defined(CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL)
+		if (!has_dsv_f) /* LGE Change */
+			mdss_dsi_panel_reset(pdata, 0);
+#else
+ 		ret = mdss_dsi_panel_reset(pdata, 0);
+ 		if (ret) {
+ 			pr_err("%s: Panel reset failed. rc=%d\n",
+ 					__func__, ret);
+ 			goto error;
+ 		}
+#endif
+ 		ret = msm_dss_enable_vreg(
+ 			ctrl_pdata->power_data.vreg_config,
+ 			ctrl_pdata->power_data.num_vreg, 0);
+ 		if (ret) {
+ 			pr_err("%s: Failed to disable vregs.rc=%d\n",
+ 				__func__, ret);
+ 		}
 	}
-error:
-	return ret;
-}
+
+ error:
+ 	return ret;
+ }
 
 static void mdss_dsi_put_dt_vreg_data(struct device *dev,
 	struct dss_module_power *module_power)
@@ -660,6 +706,9 @@ int mdss_dsi_on(struct mdss_panel_data *pdata)
 	struct mdss_panel_info *pinfo;
 	struct mipi_panel_info *mipi;
 	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
+#ifdef CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL
+	int rc = 0;
+#endif
 
 	if (pdata == NULL) {
 		pr_err("%s: Invalid input data\n", __func__);
@@ -679,6 +728,47 @@ int mdss_dsi_on(struct mdss_panel_data *pdata)
 
 	pinfo = &pdata->panel_info;
 	mipi = &pdata->panel_info.mipi;
+
+#if defined(CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL)
+#if defined(CONFIG_LGE_LCD_DSV_CTRL)
+	{
+		/* dsv_control_enable FLAG is for BLOCKING the DSV GPIO Control except Display	*/
+		/* After LCD On, DSV control is NOT available like "is_available_dsv_control = 0"  */
+		dsv_control_enable = 0;
+		pr_info("%s : dsv_control is not allowed after this time. dsv_control_enable = [%d]\n", __func__, dsv_control_enable);
+
+		/* set dsv status to be off in order to reconfirm dsv status is off */
+#if defined(CONFIG_MACH_MSM8926_E2_MPCS_US) || defined(CONFIG_MACH_MSM8926_E2_VTR_CA) || defined(CONFIG_MACH_MSM8926_E2_SPR_US)
+		/* 1. set GPIO (60) and (64) to be LOW as DSV Enable GPIO (OFF). */
+		/* 2. do not use P-Mode GPIO (64) */
+		rc = gpio_tlmm_config(GPIO_CFG((ctrl_pdata->disp_en_1st_gpio),
+									0,
+									GPIO_CFG_OUTPUT,
+									GPIO_CFG_PULL_DOWN,
+									GPIO_CFG_2MA),
+									GPIO_CFG_ENABLE);
+		if (rc) {
+			pr_err("%s: unable to config tlmm = %d\n",
+					__func__, (ctrl_pdata->disp_en_1st_gpio));		}
+		pr_info("%s: gpio_tlmm_config(%d), rc = %d\n", __func__, (ctrl_pdata->disp_en_1st_gpio), rc);
+
+		gpio_set_value((ctrl_pdata->disp_en_1st_gpio), 0);
+		pr_info("%s: dsv(%d) off", __func__, (ctrl_pdata->disp_en_1st_gpio));
+		gpio_set_value((ctrl_pdata->disp_en_2nd_gpio), 0);
+		pr_info("%s: dsv(%d) off", __func__, (ctrl_pdata->disp_en_2nd_gpio));
+#elif defined(CONFIG_MACH_MSM8926_E2_VZW)
+		/* 1. set GPIO (64) to be LOW as DSV Enable GPIO (OFF). */
+		/* 2. do not use P-Mode GPIO (64) */
+		gpio_set_value((ctrl_pdata->disp_en_2nd_gpio), 0);
+		pr_info("%s: dsv(%d) off", __func__, (ctrl_pdata->disp_en_2nd_gpio));
+#else
+		gpio_set_value((ctrl_pdata->disp_en_gpio), 0);
+		pr_info("%s: dsv(%d) off", __func__, (ctrl_pdata->disp_en_gpio));
+#endif
+		msleep(5);
+	}
+#endif
+#endif
 
 	ret = mdss_dsi_panel_power_on(pdata, 1);
 	if (ret) {
@@ -729,6 +819,18 @@ int mdss_dsi_on(struct mdss_panel_data *pdata)
 		MIPI_OUTP((ctrl_pdata->ctrl_base) + 0xac, tmp);
 		wmb();
 	}
+
+#ifdef CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL
+	if (has_dsv_f) {
+	  u32 tmp;
+	  tmp = MIPI_INP((ctrl_pdata->ctrl_base) + 0xac);
+	  tmp &= ~(1<<28);
+	  MIPI_OUTP((ctrl_pdata->ctrl_base) + 0xac, tmp);
+	  wmb();
+	  mdss_dsi_panel_reset(pdata, 1);
+	  pr_info(" panel reset after mipi stop state. lane_ctrl value = %x\n", tmp);
+	}
+#endif
 
 	if (pdata->panel_info.type == MIPI_CMD_PANEL)
 		mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 0);
@@ -1519,12 +1621,95 @@ int dsi_panel_device_register(struct device_node *pan_node,
 
 	pinfo->panel_max_fps = mdss_panel_get_framerate(pinfo);
 	pinfo->panel_max_vtotal = mdss_panel_get_vtotal(pinfo);
+#ifndef CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL
 	ctrl_pdata->disp_en_gpio = of_get_named_gpio(ctrl_pdev->dev.of_node,
 		"qcom,platform-enable-gpio", 0);
+#else
+	printk("ctrl_pdata->disp_en_gpio = %d\n",ctrl_pdata->disp_en_gpio);
+#endif
 
+#ifndef CONFIG_MACH_LGE
 	if (!gpio_is_valid(ctrl_pdata->disp_en_gpio))
 		pr_err("%s:%d, Disp_en gpio not specified\n",
 						__func__, __LINE__);
+#endif
+
+#if defined(CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL)
+#if defined(CONFIG_MACH_MSM8926_E2_MPCS_US) || defined(CONFIG_MACH_MSM8926_E2_VTR_CA) || defined(CONFIG_MACH_MSM8926_E2_SPR_US)
+	ctrl_pdata->disp_en_1st_gpio = of_get_named_gpio(ctrl_pdev->dev.of_node,"qcom,platform-enable-1st-gpio", 0);
+	pr_info("%s: ctrl_pdata->disp_en_1st_gpio (%d)", __func__, (ctrl_pdata->disp_en_1st_gpio));
+	if (!gpio_is_valid(ctrl_pdata->disp_en_1st_gpio)) {
+		 pr_err("%s:%d, disp_en_1st_gpio not specified\n",__func__, __LINE__);
+	} else {
+		rc = gpio_request(ctrl_pdata->disp_en_1st_gpio, "disp_en_1st_gpio");
+		if (rc) {
+			pr_err("request disp_en_1st_gpio gpio failed, rc=%d\n", rc);
+			gpio_free(ctrl_pdata->disp_en_1st_gpio);
+			return -ENODEV;
+		}
+	}
+
+	ctrl_pdata->disp_en_2nd_gpio = of_get_named_gpio(ctrl_pdev->dev.of_node,"qcom,platform-enable-2nd-gpio", 0);
+	pr_info("%s: ctrl_pdata->disp_en_2nd_gpio (%d)", __func__, (ctrl_pdata->disp_en_2nd_gpio));
+	if (!gpio_is_valid(ctrl_pdata->disp_en_2nd_gpio)) {
+		 pr_err("%s:%d, disp_en_2nd_gpio not specified\n",__func__, __LINE__);
+	} else {
+		rc = gpio_request(ctrl_pdata->disp_en_2nd_gpio, "disp_en_2nd_gpio");
+		if (rc) {
+			pr_err("request disp_en_2nd_gpio gpio failed, rc=%d\n", rc);
+			gpio_free(ctrl_pdata->disp_en_2nd_gpio);
+			return -ENODEV;
+		}
+	}
+#elif defined(CONFIG_MACH_MSM8926_E2_VZW)
+	ctrl_pdata->disp_en_2nd_gpio = of_get_named_gpio(ctrl_pdev->dev.of_node,"qcom,platform-enable-2nd-gpio", 0);
+	pr_info("%s: ctrl_pdata->disp_en_2nd_gpio (%d)", __func__, (ctrl_pdata->disp_en_2nd_gpio));
+	if (!gpio_is_valid(ctrl_pdata->disp_en_2nd_gpio)) {
+		 pr_err("%s:%d, disp_en_2nd_gpio not specified\n",__func__, __LINE__);
+	} else {
+		rc = gpio_request(ctrl_pdata->disp_en_2nd_gpio, "disp_en_2nd_gpio");
+		if (rc) {
+			pr_err("request disp_en_2nd_gpio gpio failed, rc=%d\n", rc);
+			gpio_free(ctrl_pdata->disp_en_2nd_gpio);
+			return -ENODEV;
+		}
+	}
+#endif
+
+	ctrl_pdata->disp_fd_gpio = of_get_named_gpio(ctrl_pdev->dev.of_node,"qcom,platform-fd-gpio", 0);
+	pr_info("%s: ctrl_pdata->disp_fd_gpio (%d)", __func__, (ctrl_pdata->disp_fd_gpio));
+	if (!gpio_is_valid(ctrl_pdata->disp_fd_gpio)) {
+		 pr_err("%s:%d, disp_fd_gpio not specified\n",__func__, __LINE__);
+	} else {
+		rc = gpio_request(ctrl_pdata->disp_fd_gpio, "disp_fd_gpio");
+		if (rc) {
+			pr_err("request disp_fd_gpio gpio failed, rc=%d\n", rc);
+			gpio_free(ctrl_pdata->disp_fd_gpio);
+			return -ENODEV;
+		}
+	}
+
+	ctrl_pdata->disp_iovcc_gpio = of_get_named_gpio(ctrl_pdev->dev.of_node, "qcom,platform-iovcc-gpio", 0);
+	pr_info("%s: ctrl_pdata->disp_iovcc_gpio (%d)", __func__, (ctrl_pdata->disp_iovcc_gpio));
+	if (!gpio_is_valid(ctrl_pdata->disp_iovcc_gpio)) {
+		 pr_err("%s:%d, disp_iovcc_gpio not specified\n",__func__, __LINE__);
+	} else {
+		rc = gpio_request(ctrl_pdata->disp_iovcc_gpio, "disp_iovcc_gpio");
+		if (rc) {
+			pr_err("request disp_iovcc_gpio gpio failed, rc=%d\n", rc);
+			gpio_free(ctrl_pdata->disp_iovcc_gpio);
+			return -ENODEV;
+		}
+	}
+
+	dual_panel = of_property_read_bool(pan_node,
+			"lge,dual-panel");
+
+	if(dual_panel)
+		pr_info("[mdss] dual panel is detected\n");
+	else
+		pr_info("[mdss] original panel is detected\n");
+#endif
 
 	if (pinfo->type == MIPI_CMD_PANEL) {
 		ctrl_pdata->disp_te_gpio = of_get_named_gpio(ctrl_pdev->dev.of_node,
@@ -1573,6 +1758,21 @@ int dsi_panel_device_register(struct device_node *pan_node,
 	if (!gpio_is_valid(ctrl_pdata->rst_gpio))
 		pr_err("%s:%d, reset gpio not specified\n",
 						__func__, __LINE__);
+#ifdef CONFIG_MACH_LGE
+	else{
+		if (pinfo->cont_splash_enabled) {
+			rc = gpio_request(ctrl_pdata->rst_gpio, "disp_rst_n");
+			if (rc) {
+				pr_err("request reset gpio failed, rc=%d\n", rc);
+				gpio_free(ctrl_pdata->rst_gpio);
+				if (gpio_is_valid(ctrl_pdata->disp_en_gpio))
+					gpio_free(ctrl_pdata->disp_en_gpio);
+				return -ENODEV;
+			}
+		}
+		gpio_direction_output(ctrl_pdata->rst_gpio, 1);
+	}
+#endif
 
 	if (pinfo->mode_gpio_state != MODE_GPIO_NOT_VALID) {
 
@@ -1624,6 +1824,11 @@ int dsi_panel_device_register(struct device_node *pan_node,
 
 	ctrl_pdata->ctrl_state = CTRL_STATE_UNKNOWN;
 
+#if defined(CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL)
+	has_dsv_f = of_property_read_bool(pan_node,
+			"lge,has-dsv");
+#endif
+
 	if (pinfo->cont_splash_enabled) {
 		pinfo->panel_power_on = 1;
 		rc = mdss_dsi_panel_power_on(&(ctrl_pdata->panel_data), 1);
@@ -1642,6 +1847,17 @@ int dsi_panel_device_register(struct device_node *pan_node,
 	rc = mdss_register_panel(ctrl_pdev, &(ctrl_pdata->panel_data));
 	if (rc) {
 		pr_err("%s: unable to register MIPI DSI panel\n", __func__);
+#if defined(CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL)
+#if defined(CONFIG_MACH_MSM8926_E2_MPCS_US) || defined(CONFIG_MACH_MSM8926_E2_VTR_CA) || defined(CONFIG_MACH_MSM8926_E2_SPR_US)
+		if(gpio_is_valid(ctrl_pdata->disp_en_1st_gpio))
+			gpio_free(ctrl_pdata->disp_en_1st_gpio);
+		if(gpio_is_valid(ctrl_pdata->disp_en_2nd_gpio))
+			gpio_free(ctrl_pdata->disp_en_2nd_gpio);
+#elif defined(CONFIG_MACH_MSM8926_E2_VZW)
+		if(gpio_is_valid(ctrl_pdata->disp_en_2nd_gpio))
+			gpio_free(ctrl_pdata->disp_en_2nd_gpio);
+#endif
+#endif
 		return rc;
 	}
 

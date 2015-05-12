@@ -314,6 +314,13 @@ struct mdss_dsi_ctrl_pdata {
 
 	struct dsi_buf tx_buf;
 	struct dsi_buf rx_buf;
+#ifdef CONFIG_FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL
+	int disp_fd_gpio;
+	int disp_iovcc_gpio;
+	int disp_p_mode;
+	int disp_en_1st_gpio;
+	int disp_en_2nd_gpio;
+#endif
 	struct dsi_buf status_buf;
 	int status_mode;
 };
