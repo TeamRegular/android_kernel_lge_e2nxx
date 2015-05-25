@@ -29,6 +29,10 @@
 #include <linux/completion.h>
 #include <linux/qpnp/qpnp-adc.h>
 #include <linux/platform_device.h>
+#ifdef CONFIG_LGE_PM_CHARGING_TEMP_SCENARIO
+#include <mach/board_lge.h>
+#endif
+
 
 /* Min ADC code represets 0V */
 #define QPNP_VADC_MIN_ADC_CODE			0x6000
@@ -44,6 +48,94 @@
    and provided to the battery driver in the units desired for
    their framework which is 0.1DegC. True resolution of 0.1DegC
    will result in the below table size to increase by 10 times */
+
+#ifdef CONFIG_LGE_PM_CHARGING_TEMP_SCENARIO
+static const struct qpnp_vadc_map_pt adcmap_btm_threshold_for_rev0[] = {
+	{-300,	1668},
+	{-200,	1571},
+	{-100,	1431},
+	{0,	1255},
+	{10,	1236},
+	{20,	1217},
+	{30,	1197},
+	{40,	1177},
+	{50,	1159},
+	{60,	1139},
+	{70,	1120},
+	{80,	1100},
+	{90,	1080},
+	{100,	1061},
+	{110,	1042},
+	{120,	1023},
+	{130,	1003},
+	{140,	984},
+	{150,	966},
+	{160,	947},
+	{170,	928},
+	{180,	910},
+	{190,	892},
+	{200,	874},
+	{210,	857},
+	{220,	840},
+	{230,	823},
+	{240,	806},
+	{250,	790},
+	{260,	774},
+	{270,	758},
+	{280,	743},
+	{290,	728},
+	{300,	713},
+	{310,	699},
+	{320,	685},
+	{330,	671},
+	{340,	658},
+	{350,	645},
+	{360,	632},
+	{370,	620},
+	{380,	608},
+	{390,	597},
+	{400,	585},
+	{410,	574},
+	{420,	564},
+	{430,	554},
+	{440,	544},
+	{450,	533},
+	{460,	525},
+	{470,	516},
+	{480,	507},
+	{490,	499},
+	{500,	490},
+	{510,	482},
+	{520,	475},
+	{530,	467},
+	{540,	460},
+	{550,	453},
+	{560,	446},
+	{570,	440},
+	{580,	434},
+	{590,	428},
+	{600,	422},
+	{610,	416},
+	{620,	411},
+	{630,	405},
+	{640,	400},
+	{650,	395},
+	{660,	391},
+	{670,	386},
+	{680,	382},
+	{690,	378},
+	{700,	373},
+	{710,	369},
+	{720,	366},
+	{730,	362},
+	{740,	358},
+	{750,	355},
+	{760,	352},
+	{770,	348},
+	{780,	345},
+	{790,	342}
+};
+
 static const struct qpnp_vadc_map_pt adcmap_btm_threshold[] = {
 	{-300,	1642},
 	{-200,	1544},
@@ -622,7 +714,11 @@ int32_t qpnp_adc_scale_batt_therm(struct qpnp_vadc_chip *chip,
 			adc_properties, chan_properties);
 
 	return qpnp_adc_map_temp_voltage(
+#ifdef CONFIG_LGE_PM_CHARGING_TEMP_SCENARIO
+			(lge_get_board_revno() == HW_REV_0) ? adcmap_btm_threshold_for_rev0 : adcmap_btm_threshold,
+#else
 			adcmap_btm_threshold,
+#endif
 			ARRAY_SIZE(adcmap_btm_threshold),
 			bat_voltage,
 			&adc_chan_result->physical);
@@ -940,7 +1036,11 @@ int32_t qpnp_adc_btm_scaler(struct qpnp_vadc_chip *chip,
 	pr_debug("warm_temp:%d and cool_temp:%d\n", param->high_temp,
 				param->low_temp);
 	rc = qpnp_adc_map_voltage_temp(
+#ifdef CONFIG_LGE_PM_CHARGING_TEMP_SCENARIO
+		(lge_get_board_revno() == HW_REV_0) ? adcmap_btm_threshold_for_rev0 : adcmap_btm_threshold,
+#else
 		adcmap_btm_threshold,
+#endif
 		ARRAY_SIZE(adcmap_btm_threshold),
 		(param->low_temp),
 		&low_output);
@@ -955,7 +1055,11 @@ int32_t qpnp_adc_btm_scaler(struct qpnp_vadc_chip *chip,
 	low_output += btm_param.adc_gnd;
 
 	rc = qpnp_adc_map_voltage_temp(
+#ifdef CONFIG_LGE_PM_CHARGING_TEMP_SCENARIO
+		(lge_get_board_revno() == HW_REV_0) ? adcmap_btm_threshold_for_rev0 : adcmap_btm_threshold,
+#else
 		adcmap_btm_threshold,
+#endif
 		ARRAY_SIZE(adcmap_btm_threshold),
 		(param->high_temp),
 		&high_output);
