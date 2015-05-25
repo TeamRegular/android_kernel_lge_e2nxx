@@ -221,6 +221,10 @@ config FB_MSM_MIPI_DSI_NT35516
 	bool
 	select FB_MSM_MIPI_DSI
 
+config FB_MSM_MIPI_DSI_LGD_INCELL
+	bool
+	select FB_MSM_MIPI_DSI
+
 config FB_MSM_MIPI_DSI_TC358764_DSI2LVDS
 	bool
 	select FB_MSM_MIPI_DSI
@@ -295,7 +299,6 @@ config FB_MSM_LCDC_TRULY_HVGA_IPS3P2335_PT_PANEL
         default n
         ---help---
         Support for LCDC Truly HVGA PT panel
-
 
 config FB_MSM_LCDC_SAMSUNG_OLED_PT
 	bool
@@ -387,6 +390,10 @@ config FB_MSM_MIPI_NT35516_CMD_QHD_PT
         select FB_MSM_MIPI_DSI_NT35516
         default n
 
+config FB_MSM_MIPI_LGD_INCELL_VIDEO_WVGA_PT
+	bool
+	select FB_MSM_MIPI_DSI_LGD_INCELL
+	default n
 
 config FB_MSM_MIPI_CHIMEI_WXGA
 	bool "LVDS Chimei WXGA Panel using Toshiba MIPI DSI-to-LVDS bridge."
@@ -724,6 +731,12 @@ config FB_MSM_MIPI_NT35516_CMD_QHD_PT_PANEL
         bool "MIPI NT35516 Command qHD PT Panel"
         select FB_MSM_MIPI_NT35516_CMD_QHD_PT
 
+config FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL
+	bool "MIPI LGD VIDEO WVGA PT panel"
+	select FB_MSM_MIPI_LGD_INCELL_VIDEO_WVGA_PT
+	---help---
+	Support for LGD VIDEO WVGA PT panel
+
 config FB_MSM_MIPI_SIMULATOR_VIDEO_PANEL
 	bool "MIPI Simulator Video Panel"
 	select FB_MSM_MIPI_SIMULATOR_VIDEO
@@ -739,6 +752,12 @@ config FB_MSM_HDMI_AS_PRIMARY
 	bool "Use HDMI as primary panel"
 	---help---
 	Support for using HDMI as primary
+
+config FB_MSM_MIPI_LGD_VIDEO_WVGA_PT_INCELL_PANEL
+        bool "MIPI LGD VIDEO WVGA PT INCELL panel"
+        select FB_MSM_MIPI_LGD_INCELL_VIDEO_WVGA_PT
+        ---help---
+        Support for LGD VIDEO WVGA PT INCELL panel
 
 config FB_MSM_PANEL_NONE
 	bool "NONE"
