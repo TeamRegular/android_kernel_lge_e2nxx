@@ -1154,7 +1154,7 @@ static int read_soc_params_raw(struct qpnp_bms_chip *chip,
 		pr_debug("PON_OCV_UV = %d, cc = %llx\n",
 				chip->last_ocv_uv, raw->cc);
 		warm_reset = qpnp_pon_is_warm_reset();
-		if (raw->last_good_ocv_uv < MIN_OCV_UV || warm_reset > 0
+		if (raw->last_good_ocv_uv < MIN_OCV_UV || warm_reset > 0) {
 			pr_debug("OCV is stale or bad, estimating new OCV.\n");
 			chip->last_ocv_uv = estimate_ocv(chip, batt_temp);
 			raw->last_good_ocv_uv = chip->last_ocv_uv;
@@ -2408,9 +2408,6 @@ out:
 		ibat_ua, vbat_uv, ocv_est_uv, pc_est,
 		soc_est, n, delta_ocv_uv, chip->last_ocv_uv,
 		pc_new, soc_new, params->rbatt_mohm, slope);
-		ibat_ua, vbat_uv, ocv_est_uv, pc_est,
-		soc_est, n, delta_ocv_uv, chip->last_ocv_uv,
-		pc_new, pc, soc_new, params->rbatt_mohm, slope);
 	return soc;
 }
 
@@ -2654,7 +2651,6 @@ static int calculate_state_of_charge(struct qpnp_bms_chip *chip,
 					new_calculated_soc);
 
 	new_calculated_soc = bound_soc(new_calculated_soc);
-
 	/*
 	 * If the battery is full, configure the cc threshold so the system
 	 * wakes up after SoC changes
@@ -3640,6 +3636,7 @@ static int qpnp_bms_power_get_property(struct power_supply *psy,
 								bms_psy);
 
 	switch (psp) {
+	case POWER_SUPPLY_PROP_CAPACITY:
 		val->intval = get_prop_bms_capacity(chip);
 		break;
 	case POWER_SUPPLY_PROP_STATUS:
@@ -4360,6 +4357,7 @@ static inline int bms_read_properties(struct qpnp_bms_chip *chip)
 
 	if (chip->adjust_soc_low_threshold >= 45)
 		chip->adjust_soc_low_threshold = 45;
+
 	SPMI_PROP_READ_BOOL(enable_fcc_learning, "enable-fcc-learning");
 	if (chip->enable_fcc_learning) {
 		SPMI_PROP_READ(min_fcc_learning_soc,
@@ -4671,12 +4669,13 @@ static int refresh_die_temp_monitor(struct qpnp_bms_chip *chip)
 						+ chip->temperature_margin;
 	chip->die_temp_monitor_params.low_temp = result.physical
 						- chip->temperature_margin;
+
 #ifndef CONFIG_MACH_LGE
 	chip->die_temp_monitor_params.state_request =
-												ADC_TM_HIGH_LOW_THR_ENABLE;
+ 						ADC_TM_HIGH_LOW_THR_ENABLE;
 #else
 	chip->die_temp_monitor_params.state_request =
-												ADC_TM_HIGH_LOW_THR_DISABLE;
+						ADC_TM_HIGH_LOW_THR_DISABLE;
 #endif
 	return qpnp_adc_tm_channel_measure(chip->adc_tm_dev,
 					&chip->die_temp_monitor_params);
